@@ -13,7 +13,7 @@ interface SmoothScrollProps {
  * Configuration:
  * - duration: 1.2s — comfortable for portfolio browsing
  * - easing: exponential-out — natural deceleration feel
- * - smoothTouch: false — native scroll on touch devices (better mobile UX)
+ * - syncTouch: false — native scroll on touch devices (better mobile UX)
  * - Sticky elements (Navbar) are unaffected — Lenis only smooths scrollTop,
  *   it does not interfere with position:sticky behaviour.
  */
@@ -29,7 +29,7 @@ export function SmoothScroll({ children }: SmoothScrollProps) {
         duration: 1.2,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // exponential out
         smoothWheel: true,
-        smoothTouch: false, // native scroll on mobile
+        syncTouch: false, // native scroll on mobile
       });
 
       lenisRef.current = lenisInstance;
