@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ─── Design Token Variables ─── */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 6% 10%;
+  --accent-primary: 262 65% 80%;
+  --accent-secondary: 262 70% 58%;
+  --neutral-border: 0 0% 90%;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 240 6% 8%;
+  --foreground: 0 0% 96%;
+  --neutral-border: 240 4% 20%;
+}
+
+/* ─── Tailwind v4 Theme Registration ─── */
+@theme {
+  /* Colors — maps to bg-background, text-foreground, etc. */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-accent-primary: hsl(var(--accent-primary));
+  --color-accent-secondary: hsl(var(--accent-secondary));
+  --color-neutral-border: hsl(var(--neutral-border));
+
+  /* Typography — maps to font-body, font-heading */
+  --font-body: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
+
+  /* Border radius */
+  --radius-DEFAULT: var(--radius);
+}
+
+/* ─── Base Styles ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth color transitions on theme switch */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Prevent transition on page load — only on user toggle */
+html.no-transition *,
+html.no-transition *::before,
+html.no-transition *::after {
+  transition: none !important;
+}
