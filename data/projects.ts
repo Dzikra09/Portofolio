@@ -77,6 +77,18 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/dzikra-althaf/fintrack",
     featured: false,
   },
+  {
+    slug: "expense-tracker",
+    title: "Tracker.io — Expense Tracker App",
+    category: "Web App",
+    description:
+      "Aplikasi tracking pengeluaran dan pemasukan harian dengan dashboard realtime, kategorisasi transaksi, serta fitur tambah, edit, dan hapus catatan keuangan.",
+    coverImage: "/covers/cover-webapp.svg",
+    techStack: ["React", "Vite", "JavaScript", "CSS3"],
+    liveUrl: "https://tracker-app-blue-three.vercel.app/",
+    repoUrl: "https://github.com/Dzikra09/expense-tracker",
+    featured: true,
+  },
 ];
 
 /** All unique categories derived from the projects array */
