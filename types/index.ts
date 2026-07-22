@@ -23,6 +23,12 @@ export interface Project {
   repoUrl?: string;
   /** If true, shown in the Home page Projects Preview */
   featured: boolean;
+  /** Extended detailed description for project page */
+  fullDescription?: string;
+  /** List of key features for project detail page */
+  features?: string[];
+  /** Background story / development context */
+  background?: string;
 }
 
 // ─── Social Link ─────────────────────────────────────────────────────────────

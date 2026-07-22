@@ -1,3 +1,2 @@
-// UI components will be added here
-// Examples: Button, Card, Badge, Input, Modal, etc.
-export {};
+export * from "./project-card";
+export * from "./theme-toggle";

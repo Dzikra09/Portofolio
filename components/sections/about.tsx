@@ -59,19 +59,13 @@ export function AboutSection() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mb-16"
+          className="mb-10 sm:mb-12"
         >
-          <motion.span
-            variants={fadeInUp}
-            className="mb-2 inline-block text-xs font-semibold uppercase tracking-widest text-accent-secondary"
-          >
-            Tentang Saya
-          </motion.span>
           <motion.h2
             variants={fadeInUp}
             className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
           >
-            Developer yang Peduli Detail
+            About
           </motion.h2>
         </motion.div>
 
@@ -88,28 +82,18 @@ export function AboutSection() {
               variants={fadeInUp}
               className="text-base leading-relaxed text-foreground/70"
             >
-              Halo, saya{" "}
-              <span className="font-semibold text-foreground">Dzikra Althaf</span>{" "}
-              — seorang web developer yang berfokus pada pembangunan antarmuka
-              web yang cepat, accessible, dan menyenangkan untuk digunakan.
-            </motion.p>
-            <motion.p
-              variants={fadeInUp}
-              className="text-base leading-relaxed text-foreground/70"
-            >
-              Saya percaya bahwa desain yang baik bukan hanya soal tampilan,
-              melainkan juga tentang bagaimana pengguna merasakannya. Setiap
-              project yang saya bangun dimulai dari pemahaman mendalam tentang
-              kebutuhan pengguna, lalu diwujudkan dengan kode yang bersih dan
-              dapat di-maintain.
-            </motion.p>
-            <motion.p
-              variants={fadeInUp}
-              className="text-base leading-relaxed text-foreground/70"
-            >
-              Saat tidak coding, saya senang mengeksplorasi desain UI terbaru,
-              berkontribusi ke open-source, atau sekadar membuat secangkir kopi
-              dan membaca tentang teknologi web terkini.
+              I&apos;m{" "}
+              <span className="font-semibold text-foreground">
+                Dzikra Alfiyah Althaf
+              </span>
+              , an active Information Systems student currently in my 4th
+              semester, with a strong interest in web development. I enjoy
+              building things from the ground up — from designing system flows
+              and structuring databases, to turning them into interfaces people
+              can actually use. Outside of coursework, I learn a lot through
+              personal projects and exploring new technologies, because I
+              believe the best way to learn development is by building
+              something real.
             </motion.p>
 
             {/* Social links */}

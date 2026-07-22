@@ -57,9 +57,9 @@ export function Hero() {
         {/* Headline */}
         <motion.div variants={fadeInUp}>
           <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-            Web Developer yang{" "}
+            Web Development Enthusiast &amp;{" "}
             <span className="bg-gradient-to-r from-accent-primary to-accent-secondary bg-clip-text text-transparent">
-              Membangun dengan Detail
+              Information System Student
             </span>
           </h1>
         </motion.div>

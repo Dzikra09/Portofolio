@@ -26,7 +26,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         ease: [0.16, 1, 0.3, 1],
       }}
       whileHover="hover"
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-neutral-border bg-background transition-shadow duration-300 hover:shadow-xl hover:shadow-accent-primary/10"
+      className="group relative flex w-full max-w-[400px] flex-col overflow-hidden rounded-2xl border border-neutral-border bg-background transition-shadow duration-300 hover:shadow-xl hover:shadow-accent-primary/10"
     >
       {/* Cover Image */}
       <div className="relative h-48 w-full overflow-hidden bg-accent-primary/10 sm:h-52">

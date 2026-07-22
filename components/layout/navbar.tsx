@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
 import { navItems, siteConfig } from "@/config/site";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 
 /**
@@ -26,8 +25,6 @@ function hrefToId(href: string): SectionId | null {
 }
 
 export function Navbar() {
-  const { setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
 
@@ -40,10 +37,7 @@ export function Navbar() {
     }
   }, []);
 
-  // Prevent hydration mismatch for theme icon
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+
 
   // Show border + stronger bg after scrolling past hero fold
   useEffect(() => {
@@ -95,11 +89,7 @@ export function Navbar() {
     };
   }, []);
 
-  const isDark = resolvedTheme === "dark";
 
-  function toggleTheme() {
-    setTheme(isDark ? "light" : "dark");
-  }
 
   /** Smooth-scroll to anchor, preventing browser default jump */
   const handleNavClick = useCallback(
@@ -165,27 +155,7 @@ export function Navbar() {
           </ul>
 
           {/* Theme toggle */}
-          <button
-            id="theme-toggle"
-            onClick={toggleTheme}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-full border border-neutral-border",
-              "text-foreground/70 transition-all duration-200",
-              "hover:border-accent-secondary hover:text-accent-secondary hover:bg-accent-primary/10",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-secondary"
-            )}
-          >
-            {mounted ? (
-              isDark ? (
-                <Sun size={16} strokeWidth={2} aria-hidden />
-              ) : (
-                <Moon size={16} strokeWidth={2} aria-hidden />
-              )
-            ) : (
-              <span className="h-4 w-4 rounded-full bg-foreground/20" />
-            )}
-          </button>
+          <ThemeToggle />
         </div>
       </nav>
     </header>
