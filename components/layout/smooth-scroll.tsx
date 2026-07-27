@@ -13,7 +13,7 @@ interface SmoothScrollProps {
  * Configuration:
  * - duration: 1.2s — comfortable for portfolio browsing
  * - easing: exponential-out — natural deceleration feel
- * - syncTouch: false — native scroll on touch devices (better mobile UX)
+ * - syncTouch: false — native scroll on touch devices (better mobile UX) 
  * - Sticky elements (Navbar) are unaffected — Lenis only smooths scrollTop,
  *   it does not interfere with position:sticky behaviour.
  */

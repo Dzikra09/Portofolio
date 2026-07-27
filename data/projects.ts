@@ -7,25 +7,30 @@ import type { Project } from "@/types";
  */
 export const projects: Project[] = [
   {
-    slug: "expense-tracker",
-    title: "Tracker.io — Expense Tracker App",
+    slug: "tracker-expense",
+    title: "Tracker.io — Expense Tracker",
     category: "Web App",
     description:
-      "Aplikasi tracking pengeluaran dan pemasukan harian dengan dashboard realtime, kategorisasi transaksi, serta fitur tambah, edit, dan hapus",
-    coverImage: "/covers/cover-webapp.svg",
-    techStack: ["React", "Vite", "JavaScript", "CSS3"],
-    liveUrl: "https://tracker-app-blue-three.vercel.app/",
-    repoUrl: "https://github.com/Dzikra09/expense-tracker",
+      "Aplikasi pencatatan keuangan pribadi (pemasukan & pengeluaran) dengan fitur filter tanggal, export data ke Excel, dan dark mode. Data tersimpan di database MySQL melalui REST API.",
+    coverImage: "/covers/cover-tracker.svg",
+    techStack: ["Node.js", "Express", "MySQL", "JavaScript", "JWT"],
+    liveUrl: "https://tracker-expense-three.vercel.app/",
+    repoUrl: "https://github.com/Dzikra09/tracker_expense",
     featured: true,
     fullDescription:
-      "Expense Tracker merupakan aplikasi berbasis web yang dikembangkan untuk membantu pengguna dalam mencatat, mengelola, dan memantau pemasukan serta pengeluaran secara sederhana. Aplikasi ini memungkinkan pengguna untuk menambahkan transaksi, mengelompokkan transaksi berdasarkan jenis pemasukan atau pengeluaran, serta melihat ringkasan kondisi keuangan melalui perhitungan saldo, total pemasukan, dan total pengeluaran secara otomatis.",
+      "Aplikasi web pencatatan keuangan pribadi yang membantu pengguna memantau arus kas mereka secara real-time — mulai dari pemasukan, pengeluaran, hingga saldo saat ini. Dibangun dengan arsitektur full-stack (backend + database terpisah dari frontend) dan sudah terhubung ke database sungguhan (MySQL), bukan lagi sekadar penyimpanan sementara di browser.",
     features: [
-      "Tambah, kelola, dan pantau transaksi keuangan",
-      "Kategorisasi transaksi berdasarkan pemasukan atau pengeluaran",
-      "Ringkasan saldo, total pemasukan, dan total pengeluaran secara otomatis",
+      "Autentikasi Pengguna — Login dan registrasi akun, setiap pengguna punya data transaksi masing-masing",
+      "Pencatatan Transaksi (CRUD) — Tambah, edit, hapus, serta ubah tipe transaksi (Pemasukan ⇄ Pengeluaran) dengan mudah",
+      "Dashboard Ringkasan Real-time — Menampilkan saldo saat ini, total pemasukan, dan total pengeluaran secara otomatis terhitung dari data di database",
+      "Kelola Kategori Custom — Pengguna bisa membuat kategori sendiri lengkap dengan emoji penanda (misal: 🍔 Makanan, 🎮 Hiburan)",
+      "Pencarian Transaksi — Cari transaksi berdasarkan judul/keterangan secara real-time",
+      "Filter Berdasarkan Tanggal — Menyaring transaksi dalam rentang tanggal tertentu, dapat dikombinasikan dengan pencarian",
+      "Export ke Excel — Data transaksi yang sedang ditampilkan (termasuk hasil filter) dapat diunduh langsung dalam format .xlsx",
+      "Dark Mode — Tampilan gelap yang nyaman digunakan, preferensi tema tersimpan otomatis",
     ],
     background:
-      "Proyek ini dikembangkan sebagai implementasi dari materi yang dipelajari selama mengikuti Bootcamp Dicoding x DBS Foundation Coding Camp 2.0. Selama proses pengembangan, saya menerapkan konsep pengembangan aplikasi web modern, mulai dari pengelolaan data, validasi input, hingga pembuatan antarmuka yang responsif dan mudah digunakan. Selain menjadi media pembelajaran, proyek ini juga menjadi sarana untuk mengasah kemampuan dalam membangun aplikasi yang memiliki fungsionalitas nyata dan dapat digunakan dalam kehidupan sehari-hari.",
+      "Proyek ini dikembangkan sebagai bagian dari portofolio pribadi, awalnya berbasis materi Bootcamp Dicoding, kemudian dikembangkan lebih lanjut secara mandiri dengan integrasi database MySQL sungguhan, arsitektur full-stack (frontend di Vercel, backend & database di Railway), serta fitur-fitur tambahan seperti JWT authentication, filter tanggal, ekspor Excel, dan dark mode. Tantangan utama meliputi migrasi dari localStorage ke MySQL, penanganan CORS antar platform deployment yang berbeda, serta memahami perbedaan koneksi database internal vs publik di Railway.",
   },
 ];
 

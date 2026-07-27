@@ -6,6 +6,7 @@ import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { siteConfig } from "@/config/site";
+import { Onboarding } from "@/components/layout/onboarding";
 
 /* ─── Google Fonts (self-hosted via next/font) ─── */
 const inter = Inter({
@@ -56,6 +57,8 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable}`}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
+        {/* Intro overlay — fixed z-[9999], shown once per session */}
+        <Onboarding />
         <ThemeProvider>
           <SmoothScroll>
             {/* Skip to content for accessibility */}
