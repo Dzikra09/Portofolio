@@ -19,7 +19,7 @@ const LETTERS = "Dzikraalthf".split("");
 const SESSION_KEY = "intro_shown";
 
 /* ── Per-letter animation ─────────────────────────────────────────────── */
-const letterVariants = {
+const letterVariants: Variants = {
   hidden: {
     opacity: 0,
     y: 36,
