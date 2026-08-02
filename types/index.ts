@@ -15,6 +15,10 @@ export interface Project {
   description: string;
   /** Path to cover image, relative to /public */
   coverImage: string;
+  /** CSS gradient string for placeholder cover (replaces coverImage when set) */
+  gradient?: string;
+  /** Accent color matching the gradient, used for border/overlay tints */
+  accent?: string;
   /** Array of technology / library names */
   techStack: string[];
   /** Live demo URL (optional) */

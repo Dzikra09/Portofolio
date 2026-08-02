@@ -2,18 +2,38 @@
 
 import { motion } from "framer-motion";
 import { projects } from "@/data/projects";
-import { ProjectCard } from "@/components/ui/project-card";
+import { ProjectCard, PlaceholderProjectCard } from "@/components/ui/project-card";
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 
 /**
- * <Dzikra Althaf/>s section — full project listing for the single-page layout.
+ * Projects section — 2×2 grid layout.
  *
- * - id="projects" for scroll-spy anchor
- * - Sticky heading below navbar while scrolling within this section
- * - All projects displayed (not just featured) with category badge on each card
- * - Viewport-triggered animation (whileInView) — animates once on scroll in
+ * - 1 real ProjectCard (Tracker.io) with full details
+ * - 3 PlaceholderProjectCards with skeleton body
+ * - Grid: 2 columns desktop, 1 column mobile
  */
+
+const PLACEHOLDER_CARDS = [
+  {
+    label: "Project Placeholder 2",
+    gradient: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+    accent: "#38bdf8",
+  },
+  {
+    label: "Project Placeholder 3",
+    gradient: "linear-gradient(135deg, #0d2818 0%, #14532d 100%)",
+    accent: "#4ade80",
+  },
+  {
+    label: "Project Placeholder 4",
+    gradient: "linear-gradient(135deg, #1c1917 0%, #44403c 100%)",
+    accent: "#fb923c",
+  },
+];
+
 export function ProjectsSection() {
+  const totalCount = projects.length + PLACEHOLDER_CARDS.length;
+
   return (
     <section
       id="projects"
@@ -45,7 +65,7 @@ export function ProjectsSection() {
               variants={fadeInUp}
               className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
             >
-              Project
+              Latest Projects
             </motion.h2>
 
             {/* Project count pill */}
@@ -53,13 +73,13 @@ export function ProjectsSection() {
               variants={fadeInUp}
               className="shrink-0 rounded-full bg-accent-primary/15 px-3 py-1 text-sm font-medium text-accent-secondary"
             >
-              {projects.length} project
+              {totalCount} projects
             </motion.span>
           </div>
         </motion.div>
       </div>
 
-      {/* Projects grid */}
+      {/* Projects grid — 2×2 */}
       <div className="px-6 py-10 sm:py-14">
         <motion.div
           variants={staggerContainer}
@@ -68,17 +88,23 @@ export function ProjectsSection() {
           viewport={viewportOnce}
           className="mx-auto max-w-6xl"
         >
-          <motion.div
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.07 } },
-            }}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Real project cards */}
             {projects.map((project, i) => (
               <ProjectCard key={project.slug} project={project} index={i} />
             ))}
-          </motion.div>
+
+            {/* Placeholder cards */}
+            {PLACEHOLDER_CARDS.map((card, i) => (
+              <PlaceholderProjectCard
+                key={card.label}
+                label={card.label}
+                gradient={card.gradient}
+                accent={card.accent}
+                index={projects.length + i}
+              />
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

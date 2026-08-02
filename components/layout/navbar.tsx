@@ -47,47 +47,49 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Scroll-spy — Intersection Observer watches each section
+  // Scroll-spy — checks element positions on every scroll tick
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    /**
+     * Strategy: for each observed section, measure how far its top edge
+     * is from the TOP of the viewport.  We activate whichever section's
+     * top is closest to 0 (i.e. has just scrolled past the top) while
+     * still being ≤ 80% down the viewport.  This handles:
+     *   • #home    — large sticky container (200vh)
+     *   • #projects — 1px sentinel immediately after sticky releases
+     *   • #about / #contact — normal full-height sections
+     */
+    const handleScrollSpy = () => {
+      const viewportH = window.innerHeight;
+      // Threshold: a section "activates" once its top is within 80% of viewport height
+      const threshold = viewportH * 0.8;
 
-    // Track which sections are currently intersecting
-    const intersecting = new Map<SectionId, boolean>();
+      let bestId: SectionId = "home";
+      let bestOffset = -Infinity; // largest negative offset wins (most-scrolled-past)
 
-    const updateActive = () => {
-      // Pick the first section (in DOM order) that is intersecting
       for (const id of SECTION_IDS) {
-        if (intersecting.get(id)) {
-          setActiveSection(id);
-          return;
+        const el = document.getElementById(id);
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+        // rect.top < threshold means the section top is above threshold line
+        if (rect.top <= threshold) {
+          // Among those above threshold, pick the one with the largest top
+          // (i.e. the most recently entered section)
+          if (rect.top > bestOffset) {
+            bestOffset = rect.top;
+            bestId = id;
+          }
         }
       }
+
+      setActiveSection(bestId);
     };
 
-    SECTION_IDS.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          intersecting.set(id, entry.isIntersecting);
-          updateActive();
-        },
-        {
-          // Trigger when section occupies middle 40% of viewport
-          rootMargin: "-10% 0px -50% 0px",
-          threshold: 0,
-        }
-      );
-
-      observer.observe(el);
-      observers.push(observer);
-    });
-
-    return () => {
-      observers.forEach((obs) => obs.disconnect());
-    };
+    handleScrollSpy(); // run once on mount
+    window.addEventListener("scroll", handleScrollSpy, { passive: true });
+    return () => window.removeEventListener("scroll", handleScrollSpy);
   }, []);
+
 
 
 
@@ -110,16 +112,19 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300",
         scrolled
-          ? "border-b border-violet-500/20 bg-violet-500/10 backdrop-blur-md shadow-sm"
-          : "bg-transparent"
+          ? "border-b border-violet-700/60 bg-violet-900/90 backdrop-blur-md shadow-lg"
+          : "bg-violet-900/70 backdrop-blur-sm"
       )}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between pl-0 pr-6 py-4">
         {/* Logo / Name — clicking scrolls to #home */}
         <a
           href="#home"
           onClick={(e) => handleNavClick(e, "#home")}
-          className="font-heading text-lg font-bold text-foreground transition-opacity hover:opacity-75"
+          className={cn(
+            "font-heading text-lg font-bold transition-opacity hover:opacity-75",
+            "text-white"
+          )}
           aria-label="Kembali ke atas halaman"
         >
           {siteConfig.name}
@@ -139,12 +144,12 @@ export function Navbar() {
                     onClick={(e) => handleNavClick(e, item.href)}
                     aria-current={isActive ? "true" : undefined}
                     className={cn(
-                      "relative px-4 py-2 text-sm font-medium rounded-full transition-all duration-200",
-                      "after:absolute after:bottom-1 after:left-4 after:right-4 after:h-px",
-                      "after:origin-left after:bg-violet-500 after:transition-transform after:duration-200",
+                      "relative px-3 py-2 text-base font-medium rounded-full transition-all duration-200",
+                      "after:absolute after:bottom-1 after:left-3 after:right-3 after:h-px",
+                      "after:origin-left after:bg-violet-400 after:transition-transform after:duration-200",
                       isActive
-                        ? "bg-violet-500/10 text-violet-500 after:scale-x-100"
-                        : "bg-transparent text-foreground/60 hover:text-foreground after:scale-x-0 hover:after:scale-x-100"
+                        ? "bg-violet-500/30 text-white after:scale-x-100"
+                        : "bg-transparent text-violet-200/80 hover:text-white after:scale-x-0 hover:after:scale-x-100"
                     )}
                   >
                     {item.label}
