@@ -212,25 +212,23 @@ export function Navbar() {
               width="18" height="18" viewBox="0 0 18 18"
               fill="none" aria-hidden
             >
-              <motion.line
-                x1="2" y1="4.5" x2="16" y2="4.5"
+              <motion.path
+                d="M 2 4.5 L 16 4.5"
                 stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
-                animate={mobileOpen ? { y: 4.5, rotate: 45 } : { y: 0, rotate: 0 }}
-                style={{ originX: "9px", originY: "4.5px" }}
+                animate={{ d: mobileOpen ? "M 4 4 L 14 14" : "M 2 4.5 L 16 4.5" }}
                 transition={{ duration: 0.22 }}
               />
-              <motion.line
-                x1="2" y1="9" x2="16" y2="9"
+              <motion.path
+                d="M 2 9 L 16 9"
                 stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
                 animate={{ opacity: mobileOpen ? 0 : 1, scaleX: mobileOpen ? 0 : 1 }}
-                style={{ originX: "9px", originY: "9px" }}
+                style={{ transformOrigin: "center" }}
                 transition={{ duration: 0.18 }}
               />
-              <motion.line
-                x1="2" y1="13.5" x2="16" y2="13.5"
+              <motion.path
+                d="M 2 13.5 L 16 13.5"
                 stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
-                animate={mobileOpen ? { y: -4.5, rotate: -45 } : { y: 0, rotate: 0 }}
-                style={{ originX: "9px", originY: "13.5px" }}
+                animate={{ d: mobileOpen ? "M 4 14 L 14 4" : "M 2 13.5 L 16 13.5" }}
                 transition={{ duration: 0.22 }}
               />
             </svg>
