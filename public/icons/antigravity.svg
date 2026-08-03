@@ -1,0 +1,13 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="32" fill="#1b1c20" />
+  <defs>
+    <linearGradient id="ag-wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00C7BE" />
+      <stop offset="20%" stop-color="#34C759" />
+      <stop offset="45%" stop-color="#FF9500" />
+      <stop offset="65%" stop-color="#FF3B30" />
+      <stop offset="100%" stop-color="#007AFF" />
+    </linearGradient>
+  </defs>
+  <path d="M 28 98 C 42 76, 48 30, 64 30 C 80 30, 86 76, 100 98" fill="none" stroke="url(#ag-wave)" stroke-width="18" stroke-linecap="round" />
+</svg>

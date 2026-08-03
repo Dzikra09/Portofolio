@@ -22,51 +22,6 @@ import { motion } from "framer-motion";
  * Responsive: single column on mobile.
  */
 
-/* ─── Card definitions ──────────────────────────────────────────────────────
- *   Card 1 (back,   z=1): rotate(-6deg)  translate(-40px,  20px)  scale(1.00)
- *   Card 2          (z=2): rotate( 4deg)  translate( 30px, -10px)  scale(1.00)
- *   Card 3          (z=3): rotate(-3deg)  translate(-15px, -30px)  scale(1.00)
- *   Card 4 (front,  z=4): rotate( 2deg)  translate( 10px,  10px)  scale(1.05)
- * ─────────────────────────────────────────────────────────────────────────── */
-const CARDS = [
-  {
-    id: 1,
-    rotate: -6, x: -40, y: 20, scale: 1, zIndex: 1,
-    gradient: "linear-gradient(135deg, #1a0533 0%, #3b1278 100%)",
-    label: "Tracker.io",
-    accent: "#a855f7",
-  },
-  {
-    id: 2,
-    rotate: 4, x: 30, y: -10, scale: 1, zIndex: 2,
-    gradient: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
-    label: "Project Placeholder 2",
-    accent: "#38bdf8",
-  },
-  {
-    id: 3,
-    rotate: -3, x: -15, y: -30, scale: 1, zIndex: 3,
-    gradient: "linear-gradient(135deg, #0d2818 0%, #14532d 100%)",
-    label: "Project Placeholder 3",
-    accent: "#4ade80",
-  },
-  {
-    id: 4,
-    rotate: 2, x: 10, y: 10, scale: 1.05, zIndex: 4,
-    gradient: "linear-gradient(135deg, #1c1917 0%, #44403c 100%)",
-    label: "Project Placeholder 4",
-    accent: "#fb923c",
-  },
-];
-
-/* ─── Entrance animation helper ─────────────────────────────────────────── */
-const fadeUp = (delay = 0) => ({
-  initial:    { opacity: 0, y: 28 },
-  animate:    { opacity: 1, y: 0 },
-  transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] as const },
-});
-
-
 /* ═══════════════════════════════════════════════════════════════════════════
    Component
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -145,7 +100,7 @@ export function Hero() {
             className="font-heading font-bold leading-tight tracking-tight text-foreground"
             style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}
           >
-            Web Development Enthusiast &amp;{" "}
+            Web Developer &amp;{" "}
             <span
               style={{
                 background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)",
@@ -154,7 +109,7 @@ export function Hero() {
                 backgroundClip: "text",
               }}
             >
-              Information System Student
+              Database Management
             </span>
           </motion.h1>
 

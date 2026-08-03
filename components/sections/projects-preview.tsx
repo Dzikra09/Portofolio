@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { projects } from "@/data/projects";
-import { ProjectCard, PlaceholderProjectCard } from "@/components/ui/project-card";
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 
 /**
@@ -12,24 +11,6 @@ import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
  * - 3 PlaceholderProjectCards with skeleton body
  * - Grid: 2 columns desktop, 1 column mobile
  */
-
-const PLACEHOLDER_CARDS = [
-  {
-    label: "Project Placeholder 2",
-    gradient: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
-    accent: "#38bdf8",
-  },
-  {
-    label: "Project Placeholder 3",
-    gradient: "linear-gradient(135deg, #0d2818 0%, #14532d 100%)",
-    accent: "#4ade80",
-  },
-  {
-    label: "Project Placeholder 4",
-    gradient: "linear-gradient(135deg, #1c1917 0%, #44403c 100%)",
-    accent: "#fb923c",
-  },
-];
 
 export function ProjectsSection() {
   const totalCount = projects.length + PLACEHOLDER_CARDS.length;

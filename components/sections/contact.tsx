@@ -23,6 +23,9 @@ type FormState = "idle" | "sending" | "sent";
 export function ContactSection() {
   const [formState, setFormState] = useState<FormState>("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  
+  // NOTE: Set to true to re-enable the contact form and its original layout
+  const isFormEnabled = false;
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -42,13 +45,8 @@ export function ContactSection() {
     <section
       id="contact"
       aria-label="Contact section"
-      className="relative px-6 py-24 sm:py-32"
+      className="relative scroll-mt-12 px-6 pt-8 pb-20 sm:scroll-mt-20 sm:pt-12 sm:pb-32"
     >
-      {/* Background glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-0 bottom-1/3 -z-10 h-80 w-80 rounded-full bg-accent-primary/10 blur-[100px]"
-      />
 
       <div className="mx-auto max-w-6xl">
         {/* Section header */}
@@ -56,8 +54,11 @@ export function ContactSection() {
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={viewportOnce}
-          className="mb-16 text-center"
+          viewport={{ once: true, amount: 0.5 }}
+          className={cn(
+            "text-center",
+            isFormEnabled ? "mb-10 sm:mb-16" : "mb-8 sm:mb-12"
+          )}
         >
           <motion.span
             variants={fadeInUp}
@@ -80,70 +81,94 @@ export function ContactSection() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
+        <div className={cn(
+          isFormEnabled 
+            ? "grid grid-cols-1 gap-8 sm:gap-12 lg:grid-cols-5" 
+            : "flex flex-col items-center justify-center"
+        )}>
           {/* Left — Contact info */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={viewportOnce}
-            className="flex flex-col gap-8 lg:col-span-2"
+            viewport={{ once: true, amount: 0.5 }}
+            className={cn(
+              "flex flex-col gap-8",
+              isFormEnabled ? "lg:col-span-2" : "items-center text-center w-full max-w-lg"
+            )}
           >
             {/* Email CTA */}
             <motion.div variants={fadeInUp}>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-foreground/40">
-                Email
-              </p>
+              {isFormEnabled && (
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-foreground/40">
+                  Email
+                </p>
+              )}
               <a
                 href="mailto:dzikraalfiyahalthaf@gmail.com"
-                className="group inline-flex items-center gap-3 rounded-xl border border-neutral-border px-4 py-3 text-sm font-medium text-foreground/70 transition-all duration-200 hover:border-accent-secondary hover:bg-accent-primary/5 hover:text-accent-secondary"
+                className={cn(
+                  "group relative overflow-hidden inline-flex items-center gap-2.5 rounded-full text-sm font-semibold tracking-wide text-white",
+                  "shadow-[0_4px_20px_hsla(262,70%,58%,0.35)] bg-[hsl(262,70%,58%)]",
+                  isFormEnabled ? "px-6 py-3" : "px-8 py-3.5 justify-center"
+                )}
               >
-                <Mail size={16} aria-hidden />
-                dzikraalfiyahalthaf@gmail.com
+                <div className="absolute inset-0 bg-[#5b21b6] -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-0"></div>
+                <span className="relative z-10 flex items-center gap-2.5">
+                  <Mail size={16} aria-hidden />
+                  dzikraalfiyahalthaf@gmail.com
+                </span>
               </a>
             </motion.div>
 
             {/* Social */}
-            <motion.div variants={fadeInUp}>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-foreground/40">
-                Sosial Media
-              </p>
-              <div className="flex items-center gap-3">
-                {socialLinks.map((link) => {
-                  const Icon = iconMap[link.icon as keyof typeof iconMap];
-                  return (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={link.label}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-border text-foreground/50 transition-all duration-200 hover:border-accent-secondary hover:bg-accent-primary/10 hover:text-accent-secondary"
-                    >
-                      {Icon && <Icon size={16} strokeWidth={1.75} aria-hidden />}
-                    </a>
-                  );
-                })}
-              </div>
-            </motion.div>
+            {isFormEnabled && (
+              <motion.div variants={fadeInUp}>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-foreground/40">
+                  Sosial Media
+                </p>
+                <div className={cn("flex items-center", isFormEnabled ? "gap-3" : "gap-4 justify-center")}>
+                  {socialLinks.map((link) => {
+                    const Icon = iconMap[link.icon as keyof typeof iconMap];
+                    return (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={link.label}
+                        className={cn(
+                          "flex items-center justify-center rounded-full border border-neutral-border text-foreground/50 transition-all duration-200 hover:border-accent-secondary hover:bg-accent-primary/10 hover:text-accent-secondary",
+                          isFormEnabled ? "h-10 w-10" : "h-12 w-12"
+                        )}
+                      >
+                        {Icon && <Icon size={isFormEnabled ? 16 : 18} strokeWidth={1.75} aria-hidden />}
+                      </a>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
 
             {/* Availability badge */}
-            <motion.div variants={fadeInUp}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-accent-primary/40 bg-accent-primary/10 px-4 py-1.5 text-sm font-medium text-accent-secondary">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-accent-secondary" aria-hidden />
-                Available for freelance &amp; collaboration
-              </span>
-            </motion.div>
+            {isFormEnabled && (
+              <motion.div variants={fadeInUp}>
+                <span className="inline-flex items-center gap-2 rounded-full border border-accent-primary/40 bg-accent-primary/10 px-4 py-1.5 text-sm font-medium text-accent-secondary">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-accent-secondary" aria-hidden />
+                  Available for freelance &amp; collaboration
+                </span>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Right — Contact form */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-            className="lg:col-span-3"
-          >
+          {isFormEnabled && (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+              className="lg:col-span-3"
+            >
             {formState === "sent" ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -271,7 +296,8 @@ export function ContactSection() {
                 </button>
               </motion.form>
             )}
-          </motion.div>
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

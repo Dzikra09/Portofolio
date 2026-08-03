@@ -26,7 +26,7 @@
  *   Row    offset: (360px card-height + 24px gap) / 2 = 192px
  */
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import {
   motion,
   useScroll,
@@ -39,14 +39,15 @@ import { ArrowUpRight } from "lucide-react";
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 
 /* ─── Shared constants ───────────────────────────────────────────────────── */
-const CARD_W = 380;          // px — card width (same in hero + grid)
+const CARD_W = 368;          // px — card width: h-gap=24px, grid=3×368+2×24=1152=max-w-6xl ✓
 const IMG_H = 200;          // px — image/gradient area height
 const BODY_H = 160;          // px — card body height
 const CARD_H = IMG_H + BODY_H; // 360px total
 const GAP = 24;           // px — grid gap
 
-const COL_OFFSET = (CARD_W + GAP) / 2; // 202
+const COL_OFFSET = (CARD_W + GAP) / 2; // 202 — kept for reference
 const ROW_OFFSET = (CARD_H + GAP) / 2; // 192
+const CARD_STEP = 392;         // px — col step: CARD_W+24=392 → h-gap=24px = v-gap ✓
 
 // Right-column centre offset from viewport centre (≈1280px desktop)
 const RIGHT_COL = 240;
@@ -56,9 +57,10 @@ const CARDS = [
   {
     id: 1,
     /* stacked (hero) */  startX: RIGHT_COL - 40, startY: 20, startR: -6, startS: 1.00,
-    /* grid (projects) */ endX: -COL_OFFSET, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
+    /* grid: top-left  */ endX: -CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 1,
-    gradient: "linear-gradient(135deg, #1a0533 0%, #3b1278 100%)",
+    animOrder: 1,
+    gradient: "hsl(262,70%,58%)",
     label: "Tracker.io",
     accent: "#a855f7",
     body: "tracker" as const,
@@ -66,9 +68,10 @@ const CARDS = [
   {
     id: 2,
     startX: RIGHT_COL + 30, startY: -10, startR: 4, startS: 1.00,
-    endX: COL_OFFSET, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
+    /* grid: top-right */ endX: CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 2,
-    gradient: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+    animOrder: 3,
+    gradient: "hsl(262,70%,58%)",
     label: "Project Placeholder 2",
     accent: "#38bdf8",
     body: "placeholder" as const,
@@ -76,9 +79,10 @@ const CARDS = [
   {
     id: 3,
     startX: RIGHT_COL - 15, startY: -30, startR: -3, startS: 1.00,
-    endX: -COL_OFFSET, endY: ROW_OFFSET, endR: 0, endS: 1.00,
+    /* grid: btm-left  */ endX: -CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 3,
-    gradient: "linear-gradient(135deg, #0d2818 0%, #14532d 100%)",
+    animOrder: 4,
+    gradient: "hsl(262,70%,58%)",
     label: "Project Placeholder 3",
     accent: "#4ade80",
     body: "placeholder" as const,
@@ -86,11 +90,34 @@ const CARDS = [
   {
     id: 4,
     startX: RIGHT_COL + 10, startY: 10, startR: 2, startS: 1.05,
-    endX: COL_OFFSET, endY: ROW_OFFSET, endR: 0, endS: 1.00,
+    /* grid: btm-right */ endX: CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 4,
-    gradient: "linear-gradient(135deg, #1c1917 0%, #44403c 100%)",
+    animOrder: 6,
+    gradient: "hsl(262,70%,58%)",
     label: "Project Placeholder 4",
     accent: "#fb923c",
+    body: "placeholder" as const,
+  },
+  {
+    id: 5,
+    startX: RIGHT_COL - 25, startY: -45, startR: -1, startS: 0.98,
+    /* grid: top-ctr   */ endX: 0, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 5,
+    animOrder: 2,
+    gradient: "hsl(262,70%,58%)",
+    label: "Project Placeholder 5",
+    accent: "#06b6d4",
+    body: "placeholder" as const,
+  },
+  {
+    id: 6,
+    startX: RIGHT_COL + 20, startY: 35, startR: 5, startS: 0.96,
+    /* grid: btm-ctr   */ endX: 0, endY: ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 6,
+    animOrder: 5,
+    gradient: "hsl(262,70%,58%)",
+    label: "Project Placeholder 6",
+    accent: "#eab308",
     body: "placeholder" as const,
   },
 ] as const;
@@ -145,7 +172,7 @@ interface AnimatedCardProps {
 function AnimatedCard({ card, progress }: AnimatedCardProps) {
   // Movement: starts at hero position, ends at grid position
   const x = useTransform(progress, [0.25, 0.85], [card.startX, card.endX]);
-  const y = useTransform(progress, [0.25, 0.85], [card.startY, card.endY + 220]);
+  const y = useTransform(progress, [0.25, 0.85], [card.startY, card.endY + 140]);
   const rotate = useTransform(progress, [0.25, 0.85], [card.startR, card.endR]);
   const scale = useTransform(progress, [0.25, 0.85], [card.startS, card.endS]);
 
@@ -153,14 +180,18 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
 
   return (
     <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 + card.animOrder * 0.1, ease: "easeOut" }}
       style={{
         position: "absolute",
         width: CARD_W,
         borderRadius: "0.875rem",
         overflow: "hidden",
-        border: `1.5px solid ${card.accent}28`,
+        border: "none",
         boxShadow: `0 8px 28px rgba(0,0,0,0.26), 0 2px 8px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.07)`,
         zIndex: card.zIndex,
+        pointerEvents: "auto", /* re-enable so card links (e.g. Lihat Detail) remain clickable */
         x, y, rotate, scale,
       }}
     >
@@ -181,7 +212,7 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
       </div>
 
       {/* ── Card body — fades in on landing ── */}
-      <div style={{ height: BODY_H, overflow: "hidden" }}>
+      <div style={{ height: BODY_H, overflow: "hidden", background: "hsl(var(--background))" }}>
         {card.body === "tracker" ? <TrackerBody /> : <PlaceholderBody />}
       </div>
     </motion.div>
@@ -189,9 +220,296 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE / TABLET LAYOUT (< 1024px)
+   A clean, static version of the hero + projects. No scroll animation.
+
+   Spacing tokens (consistent across all elements):
+   --px:      1.5rem   horizontal padding (matches px-6 / About / Contact)
+   --gap-sm:  0.75rem  small gap (badge margin, button gap)
+   --gap-md:  1.25rem  medium gap (between text blocks)
+   --gap-lg:  2rem     large gap (section internal spacing)
+   --gap-xl:  3rem     section vertical padding
+   ═══════════════════════════════════════════════════════════════════════════ */
+function MobileHeroProjects() {
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  return (
+    <>
+      {/* ── Hero section ── */}
+      <section
+        id="home"
+        aria-label="Hero section"
+        style={{ background: "hsl(var(--background))", position: "relative", overflow: "hidden" }}
+      >
+
+        {/* Hero content */}
+        <div style={{
+          position: "relative", zIndex: 1,
+          maxWidth: 720, margin: "0 auto",
+          /* Top: navbar height (~60px) + 2.5rem breathing room. Bottom: 2rem before strip */
+          padding: "calc(60px + 2.5rem) 1.5rem 2rem",
+        }}>
+          {/* Availability badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            style={{ marginBottom: "1.25rem" }}
+          >
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: "0.45rem",
+              padding: "0.35rem 0.85rem", borderRadius: "9999px",
+              border: "1px solid hsla(262,70%,58%,0.4)",
+              background: "hsla(262,70%,58%,0.10)",
+              fontSize: "0.78rem", fontWeight: 500,
+              color: "hsl(262,80%,78%)", letterSpacing: "0.02em",
+            }}>
+              <span style={{ position: "relative", display: "inline-flex" }}>
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80", display: "block" }} />
+                <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#4ade80", animation: "ping 1.4s cubic-bezier(0,0,0.2,1) infinite" }} />
+              </span>
+              Available for freelance &amp; collaboration
+            </span>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              fontSize: "clamp(1.85rem, 6.5vw, 2.6rem)",
+              fontWeight: 800, lineHeight: 1.2,
+              letterSpacing: "-0.02em",
+              color: "hsl(var(--foreground))",
+              margin: "0 0 1rem",
+            }}
+          >
+            Web Developer &amp;{" "}
+            <span style={{
+              background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+            }}>
+              Database Management
+            </span>
+          </motion.h1>
+
+          {/* Subtext */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
+              color: "hsl(var(--foreground) / 0.60)",
+              lineHeight: 1.75,
+              margin: "0 0 1.5rem",
+              maxWidth: "38rem",
+            }}
+          >
+            Berfokus pada pengembangan  website dan basis data untuk membangun solusi digital yang fungsional dan efiesien.
+          </motion.p>
+
+          {/* CTA buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.44, ease: [0.16, 1, 0.3, 1] }}
+            style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}
+          >
+            <button
+              onClick={() => scrollTo("projects")}
+              className="group relative overflow-hidden inline-flex items-center gap-[0.4rem] px-[1.45rem] py-[0.72rem] rounded-full bg-[hsl(262,70%,58%)] text-white text-[0.9rem] font-semibold border-none cursor-pointer shadow-[0_4px_20px_hsla(262,70%,58%,0.35)]"
+            >
+              <div className="absolute inset-0 bg-[#5b21b6] -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-0"></div>
+              <span className="relative z-10 flex items-center gap-[0.4rem]">
+                Lihat Projects
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </button>
+            <button
+              onClick={() => scrollTo("contact")}
+              style={{
+                display: "inline-flex", alignItems: "center",
+                padding: "0.72rem 1.45rem", borderRadius: "9999px",
+                background: "transparent", color: "hsl(var(--foreground))",
+                fontSize: "0.9rem", fontWeight: 600,
+                border: "1.5px solid hsl(var(--neutral-border))", cursor: "pointer",
+              }}
+            >
+              Hubungi Saya
+            </button>
+          </motion.div>
+        </div>
+
+        {/* ── Bottom strip: badge + marquee stacked ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            borderTop: "1px solid hsl(var(--neutral-border) / 0.6)",
+            padding: "1rem 1.5rem",
+            display: "flex", flexDirection: "column",
+            alignItems: "flex-start", gap: "0.65rem",
+          }}
+        >
+          {/* Student badge */}
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: "0.5rem",
+            padding: "0.4rem 0.9rem", borderRadius: "9999px",
+            border: "1px solid hsl(var(--neutral-border))",
+            background: "hsl(var(--foreground) / 0.03)",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(262,70%,58%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />
+            </svg>
+            <span style={{ fontSize: "0.77rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.65)", whiteSpace: "nowrap" }}>
+              4th Semester — Information Systems Student
+            </span>
+          </div>
+          {/* Discipline marquee — full-width, below badge */}
+          <div style={{
+            width: "100%", position: "relative", overflow: "hidden",
+            maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+          }}>
+            <div style={{ display: "flex", width: "max-content", animation: "marquee-scroll 22s linear infinite" }}>
+              {Array.from({ length: 4 }).map((_, gi) => (
+                <span key={gi} style={{ display: "inline-flex", alignItems: "center", gap: "1.5rem", paddingRight: "1.5rem", fontSize: "0.75rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.38)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                  <span>Web Development</span>
+                  <span style={{ opacity: 0.35, fontSize: "0.5rem" }}>●</span>
+                  <span>Back-end Development</span>
+                  <span style={{ opacity: 0.35, fontSize: "0.5rem" }}>●</span>
+                  <span>UX Research</span>
+                  <span style={{ opacity: 0.35, fontSize: "0.5rem" }}>●</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <style>{`
+          @keyframes ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }
+          @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        `}</style>
+      </section>
+
+      {/* ── Projects section ── */}
+      <section
+        id="projects"
+        aria-label="Projects section"
+        style={{ background: "hsl(var(--background))", padding: "3rem 1.5rem 4rem", scrollMarginTop: "2.5rem" }}
+      >
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <motion.h2
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
+            style={{ marginBottom: "1.5rem" }}
+          >
+            Project
+          </motion.h2>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            style={{
+              display: "grid",
+              /* 1 col on mobile, 2 cols when ≥ 480px, up to 300px per card */
+              gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
+              gap: "1rem",
+            }}
+          >
+            {CARDS.map((card) => (
+              <motion.div
+                key={card.id}
+                variants={fadeInUp}
+                style={{
+                  borderRadius: "0.875rem",
+                  overflow: "hidden",
+                  border: "none",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                  background: "hsl(var(--background))",
+                }}
+              >
+                {/* Gradient image area */}
+                <div style={{ width: "100%", height: 160, background: card.gradient, position: "relative" }}>
+                  <div style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0,
+                    padding: "0.5rem 0.8rem",
+                    background: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(6px)",
+                    borderTop: `1px solid ${card.accent}20`,
+                  }}>
+                    <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em" }}>
+                      {card.label}
+                    </span>
+                  </div>
+                </div>
+                {/* Card body */}
+                <div style={{ height: BODY_H, overflow: "hidden" }}>
+                  {card.body === "tracker" ? <TrackerBody /> : <PlaceholderBody />}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    MAIN EXPORT
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Responsive switcher: renders MobileHeroProjects on screens < 1024px,
+ * or DesktopHeroProjects on screens >= 1024px.
+ * Returns null on first render to avoid SSR/hydration mismatch.
+ */
 export function HeroProjectsSection() {
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Ensure scroll restoration to deep links (like /#projects) works after hydration
+  useEffect(() => {
+    if (isDesktop !== null) {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) {
+            el.scrollIntoView({ behavior: "instant" });
+          }
+        }, 50);
+      }
+    }
+  }, [isDesktop]);
+
+  if (isDesktop === null) {
+    return (
+      <div id="home" style={{ position: "relative", height: "calc(200vh + max(0px, 512px - 50vh))", width: "100%" }}>
+        <div id="projects" style={{ position: "absolute", top: "162vh", scrollMarginTop: "67vh", width: 1, height: 1 }} aria-hidden />
+      </div>
+    );
+  }
+  return isDesktop ? <DesktopHeroProjects /> : <MobileHeroProjects />;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESKTOP LAYOUT (≥ 1024px) — Full scroll animation
+   ═══════════════════════════════════════════════════════════════════════════ */
+function DesktopHeroProjects() {
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
@@ -204,6 +522,15 @@ export function HeroProjectsSection() {
     offset: ["start start", "end end"],
   });
 
+  // Force framer-motion useScroll to sync with browser scroll restoration
+  // (Fixes issue where cards/heading stay hidden/stacked until user manually scrolls)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event("scroll"));
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   // ── Natural Scrolling Simulation ──
   // Instead of fading out, we move the elements vertically at the same speed as the user's scroll.
   // As the user scrolls 100vh (progress 0 -> 1), the elements move -100vh.
@@ -212,24 +539,20 @@ export function HeroProjectsSection() {
 
 
   /**
-   * z-index management for the sticky panel:
-   * - Active (progress < 0.98): z-index 10 — above normal page flow
-   * - Released (progress ≥ 0.98): z-index 0 — section below can surface
-   * We use useMotionValueEvent to imperatively set the DOM style,
-   * which is faster than a MotionValue on zIndex (avoids layout thrash).
+   * We previously lowered zIndex at progress >= 0.98, but that caused the section
+   * to disappear when scrolling up from the About section (due to stacking context).
+   * IntersectionObserver doesn't require zIndex changes to detect the sentinel.
    */
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (!stickyRef.current) return;
-    stickyRef.current.style.zIndex = latest >= 0.98 ? "0" : "10";
-  });
 
-  // ── Toggle heading visibility and opacity as cards approach grid position ──
-  // Smooth opacity transition between progress 0.65 and 0.80
+  // ── Show heading with fadeInUp effect once cards are fully settled ──
+  // Starts at progress 0.82 (cards finish at 0.85), fully visible at 0.95
+  // Mimics About section's fadeInUp: opacity 0→1 + translateY 20px→0
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (!headingRef.current) return;
-    const opacity = latest < 0.65 ? 0 : latest > 0.80 ? 1 : (latest - 0.65) / 0.15;
-    headingRef.current.style.opacity = opacity.toString();
-    headingRef.current.style.visibility = latest >= 0.65 ? "visible" : "hidden";
+    const t = latest < 0.82 ? 0 : latest > 0.95 ? 1 : (latest - 0.82) / 0.13;
+    headingRef.current.style.opacity = t.toString();
+    headingRef.current.style.visibility = latest >= 0.82 ? "visible" : "hidden";
+    headingRef.current.style.transform = `translateY(${(1 - t) * 20}px)`;
   });
 
   return (
@@ -260,6 +583,14 @@ export function HeroProjectsSection() {
         id="home"
         style={{ position: "relative", height: "200vh" }}
       >
+        {/* 
+          Sentinel for Navbar scroll-spy.
+          Placed at 162vh so it crosses the 80vh viewport threshold exactly
+          when scroll progress is 82vh (0.82), syncing perfectly with the
+          heading fade-in animation.
+        */}
+        <div id="projects" style={{ position: "absolute", top: "162vh", scrollMarginTop: "67vh", width: 1, height: 1 }} aria-hidden />
+
         {/*
           ══════════════════════════════════════════════════════════
           STICKY PANEL — stays on screen for the 200vh scroll
@@ -281,161 +612,176 @@ export function HeroProjectsSection() {
             zIndex: 10, /* initial; imperatively lowered at progress >= 0.98 */
           }}
         >
-          {/* ── Ambient glow blobs ── */}
-          <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: "-10%", left: "-5%", width: "50vw", height: "50vw", maxWidth: 600, maxHeight: 600, borderRadius: "50%", background: "radial-gradient(circle, hsla(262,70%,58%,0.18) 0%, transparent 70%)", filter: "blur(40px)" }} />
-            <div style={{ position: "absolute", bottom: "-5%", right: "5%", width: "40vw", height: "40vw", maxWidth: 480, maxHeight: 480, borderRadius: "50%", background: "radial-gradient(circle, hsla(210,100%,70%,0.12) 0%, transparent 70%)", filter: "blur(40px)" }} />
-          </div>
 
           {/* ══════════════════════════════════════════════════════
-              PHASE 1 — HERO CONTENT (left column, fades out)
+              LAYOUT WRAPPER — matches max-w-6xl bounds of other sections
           ══════════════════════════════════════════════════════ */}
-          <motion.div
-            style={{
-              y: scrollYOffset,
-              position: "absolute",
-              left: 0, top: 0, bottom: 0,
-              width: "47%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              padding: "0 clamp(1.5rem,5vw,4rem)",
-              gap: "1.5rem",
-            }}
-          >
-            {/* Availability badge */}
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", padding: "0.35rem 0.85rem", borderRadius: "9999px", border: "1px solid hsla(262,70%,58%,0.4)", background: "hsla(262,70%,58%,0.10)", fontSize: "0.78rem", fontWeight: 500, color: "hsl(262,80%,78%)", letterSpacing: "0.02em", width: "fit-content" }}>
-              <span style={{ position: "relative", display: "inline-flex" }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80", display: "block" }} />
-                <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#4ade80", animation: "ping 1.4s cubic-bezier(0,0,0.2,1) infinite" }} />
-              </span>
-              Available for freelance &amp; collaboration
-            </span>
+          <div className="mx-auto h-full w-full max-w-6xl relative px-6">
 
-            {/* Headline */}
-            <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", color: "hsl(var(--foreground))", margin: 0 }}>
-              Web Development Enthusiast &amp;{" "}
-              <span style={{ background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                Information System Student
-              </span>
-            </h1>
-
-            {/* Subtext */}
-            <p style={{ fontSize: "clamp(0.9rem,1.5vw,1.05rem)", color: "hsl(var(--foreground) / 0.60)", lineHeight: 1.7, maxWidth: "26rem", margin: 0 }}>
-              Membangun antarmuka web yang bersih, performan, dan berpusat pada pengguna — sambil terus belajar dan mengeksplorasi teknologi baru.
-            </p>
-
-            {/* CTA buttons */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-              <button
-                onClick={() => scrollTo("projects")}
-                style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", padding: "0.7rem 1.45rem", borderRadius: "9999px", background: "hsl(262,70%,58%)", color: "#fff", fontSize: "0.88rem", fontWeight: 600, border: "none", cursor: "pointer", boxShadow: "0 4px 20px hsla(262,70%,58%,0.35)" }}
+            {/* ══════════════════════════════════════════════════════
+                PHASE 1 — HERO CONTENT (left column, fades out)
+            ══════════════════════════════════════════════════════ */}
+            <motion.div
+              style={{
+                y: scrollYOffset,
+                position: "absolute",
+                left: 0, top: 0, bottom: 0,
+                width: "47%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "0",
+                gap: "1.5rem",
+              }}
+            >
+              {/* Availability badge */}
+              <motion.span
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", padding: "0.35rem 0.85rem", borderRadius: "9999px", border: "1px solid hsla(262,70%,58%,0.4)", background: "hsla(262,70%,58%,0.10)", fontSize: "0.78rem", fontWeight: 500, color: "hsl(262,80%,78%)", letterSpacing: "0.02em", width: "fit-content" }}
               >
-                Lihat Projects
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </button>
-              <button
-                onClick={() => scrollTo("contact")}
-                style={{ display: "inline-flex", alignItems: "center", padding: "0.7rem 1.45rem", borderRadius: "9999px", background: "transparent", color: "hsl(var(--foreground))", fontSize: "0.88rem", fontWeight: 600, border: "1.5px solid hsl(var(--neutral-border))", cursor: "pointer" }}
-              >
-                Hubungi Saya
-              </button>
-            </div>
-          </motion.div>
+                <span style={{ position: "relative", display: "inline-flex" }}>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80", display: "block" }} />
+                  <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#4ade80", animation: "ping 1.4s cubic-bezier(0,0,0.2,1) infinite" }} />
+                </span>
+                Available for freelance &amp; collaboration
+              </motion.span>
 
-          {/* ══════════════════════════════════════════════════════
+              {/* Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", color: "hsl(var(--foreground))", margin: 0 }}
+              >
+                Web Developer &amp;{" "}
+                <span style={{ background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                  Database Management
+                </span>
+              </motion.h1>
+
+              {/* Subtext */}
+              <motion.p
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                style={{ fontSize: "clamp(0.9rem,1.5vw,1.05rem)", color: "hsl(var(--foreground) / 0.60)", lineHeight: 1.7, maxWidth: "26rem", margin: 0 }}
+              >
+                Berfokus pada pengembangan  website dan basis data untuk membangun solusi digital yang fungsional dan efiesien.
+              </motion.p>
+
+              {/* CTA buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}
+              >
+                <button
+                  onClick={() => scrollTo("projects")}
+                  className="group relative overflow-hidden inline-flex items-center gap-[0.4rem] px-[1.45rem] py-[0.7rem] rounded-full bg-[hsl(262,70%,58%)] text-white text-[0.88rem] font-semibold border-none cursor-pointer shadow-[0_4px_20px_hsla(262,70%,58%,0.35)]"
+                >
+                  <div className="absolute inset-0 bg-[#5b21b6] -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-0"></div>
+                  <span className="relative z-10 flex items-center gap-[0.4rem]">
+                    Lihat Projects
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
+                </button>
+                <button
+                  onClick={() => scrollTo("contact")}
+                  style={{ display: "inline-flex", alignItems: "center", padding: "0.7rem 1.45rem", borderRadius: "9999px", background: "transparent", color: "hsl(var(--foreground))", fontSize: "0.88rem", fontWeight: 600, border: "1.5px solid hsl(var(--neutral-border))", cursor: "pointer" }}
+                >
+                  Hubungi Saya
+                </button>
+              </motion.div>
+            </motion.div>
+
+            {/* ══════════════════════════════════════════════════════
               PHASE 1 — BOTTOM STRIP (badge + marquee, fades out)
           ══════════════════════════════════════════════════════ */}
-          <motion.div
-            style={{
-              y: scrollYOffset,
-              position: "absolute",
-              bottom: 0, left: 0, right: 0,
-              borderTop: "1px solid hsl(var(--neutral-border) / 0.6)",
-              padding: "1.1rem clamp(1.5rem,4vw,4rem)",
-              display: "flex", alignItems: "center",
-              flexDirection: "row", flexWrap: "wrap", gap: "1rem",
-              pointerEvents: "none",
-            }}
-          >
-            {/* Student badge */}
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.55rem", padding: "0.4rem 0.95rem", borderRadius: "9999px", border: "1px solid hsl(var(--neutral-border))", background: "hsl(var(--foreground) / 0.03)", flexShrink: 0 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(262,70%,58%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />
-              </svg>
-              <span style={{ fontSize: "0.77rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.65)", whiteSpace: "nowrap" }}>
-                4th Semester — Information Systems Student
-              </span>
-            </div>
-
-            {/* Marquee */}
-            <div style={{ flex: 1, minWidth: 0, position: "relative", overflow: "hidden", maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)" }}>
-              <div style={{ display: "flex", width: "max-content", animation: "marquee-scroll 28s linear infinite" }}>
-                {Array.from({ length: 4 }).map((_, gi) => (
-                  <span key={gi} style={{ display: "inline-flex", alignItems: "center", gap: "2rem", paddingRight: "2rem", fontSize: "0.81rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.38)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                    <span>Web Development</span>
-                    <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>●</span>
-                    <span>Back-end Development</span>
-                    <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>●</span>
-                    <span>UX Research</span>
-                    <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>●</span>
-                  </span>
-                ))}
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}
+              style={{
+                y: scrollYOffset,
+                position: "absolute",
+                bottom: 0, left: 0, right: 0,
+                borderTop: "1px solid hsl(var(--neutral-border) / 0.6)",
+                padding: "1.1rem 0",
+                display: "flex", alignItems: "center",
+                flexDirection: "row", flexWrap: "wrap", gap: "1rem",
+                pointerEvents: "none",
+              }}
+            >
+              {/* Student badge */}
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "0.55rem", padding: "0.4rem 0.95rem", borderRadius: "9999px", border: "1px solid hsl(var(--neutral-border))", background: "hsl(var(--foreground) / 0.03)", flexShrink: 0 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(262,70%,58%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+                <span style={{ fontSize: "0.77rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.65)", whiteSpace: "nowrap" }}>
+                  4th Semester — Information Systems Student
+                </span>
               </div>
-            </div>
-          </motion.div>
+
+              {/* Marquee */}
+              <div style={{ flex: 1, minWidth: 0, position: "relative", overflow: "hidden", maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)" }}>
+                <div style={{ display: "flex", width: "max-content", animation: "marquee-scroll 28s linear infinite" }}>
+                  {Array.from({ length: 4 }).map((_, gi) => (
+                    <span key={gi} style={{ display: "inline-flex", alignItems: "center", gap: "2rem", paddingRight: "2rem", fontSize: "0.81rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.38)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                      <span>Web Development</span>
+                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>●</span>
+                      <span>Back-end Development</span>
+                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>●</span>
+                      <span>UX Research</span>
+                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>●</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
 
 
-          {/* ══════════════════════════════════════════════════════
+            {/* ══════════════════════════════════════════════════════
               PHASE 3 — PROJECTS HEADING (above cards grid)
               Positioned absolutely above the 2×2 grid centre.
               Fades in as cards arrive at their grid positions.
 
-              To adjust vertical position: change the "-202px" in
-              top: "calc(50% - 202px)"  →  increase = move up,
+              To adjust vertical position: change the "-282px" in
+              top: "calc(50% - 282px)"  →  increase = move up,
                                            decrease = move down.
-              To adjust horizontal position: change the "-202px" in
-              left: "calc(50% - 202px)"  to match the left card edge.
           ══════════════════════════════════════════════════════ */}
-          <div
-            ref={headingRef}
-            style={{
-              position: "absolute",
-              /* ── Adjust these two values to move the heading ── */
-              top: "calc(50% - 202px)", /* ↑ increase number = move up  */
-              left: "max(1.5rem, calc(50% - 576px))", /* ← mirrors About section: px-6 + mx-auto max-w-6xl */
-              /* ─────────────────────────────────────────────── */
-              visibility: "hidden", /* shown imperatively via headingRef */
-              opacity: 0,
-              pointerEvents: "none",
-              zIndex: 20,
-            }}
-          >
-            <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
+            <div
+              ref={headingRef}
+              style={{
+                position: "absolute",
+                /* ── Adjust this value to move the heading vertically ── */
+                top: "calc(50% - 282px)",
+                left: 0, /* Aligned to wrapper's px-6 edge */
+                visibility: "hidden", /* shown imperatively via headingRef */
+                opacity: 0,
+                pointerEvents: "none",
+                zIndex: 20,
+              }}
             >
-              <motion.h2
-                variants={fadeInUp}
-                className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={viewportOnce}
               >
-                Project
-              </motion.h2>
-            </motion.div>
-          </div>
+                <motion.h2
+                  variants={fadeInUp}
+                  className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
+                >
+                  Project
+                </motion.h2>
+              </motion.div>
+            </div>
 
-          {/* ══════════════════════════════════════════════════════
+            {/* ══════════════════════════════════════════════════════
               ALL 4 ANIMATED CARDS — the single source of truth
               Centred in the panel; x/y push them right in hero
               phase and distribute to 2×2 grid in projects phase.
           ══════════════════════════════════════════════════════ */}
-          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {CARDS.map((card) => (
-              <AnimatedCard key={card.id} card={card} progress={scrollYProgress} />
-            ))}
-          </div>
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+              {CARDS.map((card) => (
+                <AnimatedCard key={card.id} card={card} progress={scrollYProgress} />
+              ))}
+            </div>
+
+          </div> {/* End layout wrapper */}
 
           {/* Keyframes */}
           <style>{`
@@ -468,20 +814,17 @@ export function HeroProjectsSection() {
           point (progress ≥ 0.98), so nothing is blocked.
         ══════════════════════════════════════════════════════════
       */}
-      <div
-        id="projects"
-        aria-hidden
-        style={{ height: 1, overflow: "hidden", position: "relative", opacity: 0, pointerEvents: "none" }}
-      />
+      {/* (The #projects sentinel was moved inside the #home container above) */}
 
       {/* 
         Spacer to push the About section down.
-        Since stickyRef has overflowY: "visible", the bottom cards (shifted by +220) will spill over its 100vh height.
-        The bottom of the cards reach approx 50vh + 592px.
-        So they overflow by (50vh + 592px) - 100vh = 592px - 50vh.
-        We add 80px (5rem) extra gap -> 672px - 50vh.
+        Since stickyRef has overflowY: "visible", the bottom cards will spill over its 100vh height.
+        The center of the bottom cards is at 50vh + 192px (ROW_OFFSET) + 140px (y-shift) = 50vh + 332px.
+        Card height is 360px, so the bottom edge is at 50vh + 332px + 180px = 50vh + 512px.
+        So they overflow the 100vh container by (50vh + 512px) - 100vh = 512px - 50vh.
+        We add exactly this overflow. The visual gap is naturally handled by AboutSection's padding.
       */}
-      <div style={{ height: "max(5rem, calc(672px - 50vh))" }} />
+      <div style={{ height: "max(0px, calc(512px - 50vh))" }} />
 
       {/* AboutSection + ContactSection follow */}
     </>

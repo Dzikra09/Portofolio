@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { navItems, siteConfig } from "@/config/site";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Sticky navbar with:
@@ -27,6 +28,7 @@ function hrefToId(href: string): SectionId | null {
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Initialise activeSection from URL hash on first load
   // — fixes direct-anchor URLs like /#projects being correct on page mount
@@ -87,8 +89,24 @@ export function Navbar() {
 
     handleScrollSpy(); // run once on mount
     window.addEventListener("scroll", handleScrollSpy, { passive: true });
-    return () => window.removeEventListener("scroll", handleScrollSpy);
+
+    // Re-run scroll spy when page height changes (e.g., after Hero hydration)
+    const resizeObserver = new ResizeObserver(() => handleScrollSpy());
+    resizeObserver.observe(document.body);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollSpy);
+      resizeObserver.disconnect();
+    };
   }, []);
+
+  // Sync URL hash with the active section as user scrolls
+  useEffect(() => {
+    const currentHash = window.location.hash.replace("#", "");
+    if (currentHash !== activeSection) {
+      window.history.replaceState(null, "", `#${activeSection}`);
+    }
+  }, [activeSection]);
 
 
 
@@ -98,25 +116,43 @@ export function Navbar() {
     (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
       if (!href.startsWith("#")) return;
       e.preventDefault();
+      setMobileOpen(false);
       const id = href.replace("#", "");
       const el = document.getElementById(id);
+
       if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+        // Defer scroll slightly to allow mobile menu closing animation/state update
+        // to not interrupt the smooth scrolling calculation.
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth" });
+          // Update URL to reflect the current section
+          window.history.pushState(null, "", href);
+        }, 50);
       }
     },
     []
   );
 
+  // Close mobile menu on scroll
+  useEffect(() => {
+    const close = () => setMobileOpen(false);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, []);
+
   return (
-    <header
+    <motion.header
+      initial={{ y: "-100%" }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
+        "fixed top-0 z-50 w-full transition-all duration-300",
         scrolled
-          ? "border-b border-violet-700/60 bg-violet-900/90 backdrop-blur-md shadow-lg"
-          : "bg-violet-900/70 backdrop-blur-sm"
+          ? "border-b border-white/10 bg-[hsl(262,70%,58%)] backdrop-blur-md shadow-lg"
+          : "bg-[hsl(262,70%,58%)]"
       )}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between pl-0 pr-6 py-4">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo / Name — clicking scrolls to #home */}
         <a
           href="#home"
@@ -130,9 +166,10 @@ export function Navbar() {
           {siteConfig.name}
         </a>
 
-        {/* Nav items + Theme toggle */}
-        <div className="flex items-center gap-6">
-          <ul className="hidden items-center gap-6 md:flex" role="list">
+        {/* Right side: desktop nav + theme toggle + hamburger */}
+        <div className="flex items-center gap-3 sm:gap-6">
+          {/* Desktop nav links — hidden on mobile */}
+          <ul className="hidden items-center gap-1.5 md:flex" role="list">
             {navItems.map((item) => {
               const sectionId = hrefToId(item.href);
               const isActive = sectionId === activeSection;
@@ -144,12 +181,10 @@ export function Navbar() {
                     onClick={(e) => handleNavClick(e, item.href)}
                     aria-current={isActive ? "true" : undefined}
                     className={cn(
-                      "relative px-3 py-2 text-base font-medium rounded-full transition-all duration-200",
-                      "after:absolute after:bottom-1 after:left-3 after:right-3 after:h-px",
-                      "after:origin-left after:bg-violet-400 after:transition-transform after:duration-200",
+                      "relative px-4 py-2 text-[15px] font-medium rounded-full transition-colors duration-200",
                       isActive
-                        ? "bg-violet-500/30 text-white after:scale-x-100"
-                        : "bg-transparent text-violet-200/80 hover:text-white after:scale-x-0 hover:after:scale-x-100"
+                        ? "bg-white/20 text-white"
+                        : "bg-transparent text-white/80 hover:bg-white/15 hover:text-white"
                     )}
                   >
                     {item.label}
@@ -160,9 +195,96 @@ export function Navbar() {
           </ul>
 
           {/* Theme toggle */}
-          <ThemeToggle />
+          <ThemeToggle className="border-transparent bg-transparent text-white/90 hover:bg-white/15 hover:text-white hover:border-transparent focus-visible:ring-white/50" />
+
+          {/* Hamburger button — visible only on mobile */}
+          <button
+            id="mobile-menu-btn"
+            className="flex items-center justify-center w-9 h-9 rounded-full border border-white/40 text-white transition-all duration-200 hover:bg-white/20 md:hidden"
+            aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMobileOpen((prev) => !prev)}
+          >
+            <span className="sr-only">{mobileOpen ? "Tutup" : "Menu"}</span>
+            {/* Animated hamburger / X icon */}
+            <svg
+              width="18" height="18" viewBox="0 0 18 18"
+              fill="none" aria-hidden
+            >
+              <motion.line
+                x1="2" y1="4.5" x2="16" y2="4.5"
+                stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+                animate={mobileOpen ? { y: 4.5, rotate: 45 } : { y: 0, rotate: 0 }}
+                style={{ originX: "9px", originY: "4.5px" }}
+                transition={{ duration: 0.22 }}
+              />
+              <motion.line
+                x1="2" y1="9" x2="16" y2="9"
+                stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+                animate={{ opacity: mobileOpen ? 0 : 1, scaleX: mobileOpen ? 0 : 1 }}
+                style={{ originX: "9px", originY: "9px" }}
+                transition={{ duration: 0.18 }}
+              />
+              <motion.line
+                x1="2" y1="13.5" x2="16" y2="13.5"
+                stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
+                animate={mobileOpen ? { y: -4.5, rotate: -45 } : { y: 0, rotate: 0 }}
+                style={{ originX: "9px", originY: "13.5px" }}
+                transition={{ duration: 0.22 }}
+              />
+            </svg>
+          </button>
         </div>
       </nav>
-    </header>
+
+      {/* Mobile dropdown menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            id="mobile-nav"
+            role="navigation"
+            aria-label="Mobile navigation"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden border-t border-white/20 bg-[hsl(262,70%,58%)] md:hidden"
+          >
+            <ul
+              className="flex flex-col gap-1 px-4 py-3"
+              role="list"
+            >
+              {navItems.map((item, i) => {
+                const sectionId = hrefToId(item.href);
+                const isActive = sectionId === activeSection;
+                return (
+                  <motion.li
+                    key={item.href}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 + 0.05, duration: 0.22 }}
+                  >
+                    <a
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      aria-current={isActive ? "true" : undefined}
+                      className={cn(
+                        "block w-full rounded-xl px-4 py-3 text-base font-medium transition-all duration-150",
+                        isActive
+                          ? "bg-white/20 text-white shadow-sm"
+                          : "text-white/80 hover:bg-white/10 hover:text-white"
+                      )}
+                    >
+                      {item.label}
+                    </a>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }

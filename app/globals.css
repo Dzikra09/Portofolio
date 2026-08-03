@@ -61,3 +61,8 @@ html.no-transition *::before,
 html.no-transition *::after {
   transition: none !important;
 }
+
+/* Invert colors in dark mode for specific images */
+.dark .invert-in-dark {
+  filter: invert(1);
+}

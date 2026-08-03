@@ -56,9 +56,9 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       )}
     >
       {isDark ? (
-        <Sun size={16} strokeWidth={2} aria-hidden />
+        <Sun size={18} strokeWidth={2} aria-hidden />
       ) : (
-        <Moon size={16} strokeWidth={2} aria-hidden />
+        <Moon size={18} strokeWidth={2} aria-hidden />
       )}
     </button>
   );
