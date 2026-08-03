@@ -35,7 +35,7 @@
 
 /* ─── Base Styles ─── */
 html {
-  scroll-behavior: smoot;
+  scroll-behavior: smooth;
 }
 
 body {
