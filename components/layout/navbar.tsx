@@ -100,11 +100,15 @@ export function Navbar() {
     };
   }, []);
 
-  // Sync URL hash with the active section as user scrolls
+  // Sync URL path and document title with the active section as user scrolls
   useEffect(() => {
-    const currentHash = window.location.hash.replace("#", "");
-    if (currentHash !== activeSection) {
-      window.history.replaceState(null, "", `#${activeSection}`);
+    if (activeSection === "home") {
+      window.history.replaceState(null, "", "/");
+      document.title = siteConfig.title;
+    } else {
+      const formattedTitle = activeSection.charAt(0).toUpperCase() + activeSection.slice(1);
+      window.history.replaceState(null, "", `/${activeSection}`);
+      document.title = `${formattedTitle} | ${siteConfig.name}`;
     }
   }, [activeSection]);
 

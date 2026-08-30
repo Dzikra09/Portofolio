@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
@@ -13,19 +13,14 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 /* ─── Site Metadata ─── */
 export const metadata: Metadata = {
   title: {
     default: siteConfig.title,
-    template: `%s — ${siteConfig.name}`,
+    template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
@@ -54,7 +49,7 @@ export default function RootLayout({
     <html
       lang="id"
       suppressHydrationWarning // Required by next-themes to prevent hydration mismatch
-      className={`${inter.variable} ${spaceGrotesk.variable}`}
+      className={inter.variable}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
         {/* Intro overlay — fixed z-[9999], shown once per session */}

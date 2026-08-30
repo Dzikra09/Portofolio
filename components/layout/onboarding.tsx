@@ -127,7 +127,7 @@ export function Onboarding() {
                 key={i}
                 variants={letterVariants}
                 /**
-                 * Font  : Space Grotesk (font-heading token)
+                 * Font  : Inter (font-heading token)
                  * Color : accent-secondary — violet token from design system
                  * Size  : responsive via clamp (no overflow on narrow screens)
                  */

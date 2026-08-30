@@ -26,7 +26,8 @@
  *   Row    offset: (360px card-height + 24px gap) / 2 = 192px
  */
 
-import { useRef, useCallback, useState, useEffect } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   motion,
   useScroll,
@@ -35,17 +36,90 @@ import {
   type MotionValue,
 } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
+
+/* ─── Cursor-following circle — injected once ───────────────────────────── */
+const CURSOR_STYLE = `
+  .proj-card-area, .proj-card-area * { cursor: none !important; }
+`;
+
+/** Wraps the entire card and provides a smooth custom cursor following the mouse */
+function ProjectCardHoverProvider({
+  children,
+  slug,
+  enabled = true,
+}: {
+  children: React.ReactNode;
+  slug: string;
+  enabled?: boolean;
+}) {
+  const [pos, setPos] = React.useState<{ x: number; y: number } | null>(null);
+  const [isHovered, setIsHovered] = React.useState(false);
+  const router = useRouter();
+
+  const handleMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!enabled) return;
+    setPos({ x: e.clientX, y: e.clientY });
+  }, [enabled]);
+
+  const handleEnter = React.useCallback(() => { if (enabled) setIsHovered(true); }, [enabled]);
+  const handleLeave = React.useCallback(() => setIsHovered(false), []);
+  const handleClick = React.useCallback(() => {
+    if (enabled) router.push(`/projects/${slug}`);
+  }, [router, slug, enabled]);
+
+  // Reset hover state when disabled (e.g. during transition)
+  React.useEffect(() => {
+    if (!enabled) setIsHovered(false);
+  }, [enabled]);
+
+  return (
+    <div
+      className={enabled ? "proj-card-area" : undefined}
+      onMouseMove={handleMove}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+      onClick={handleClick}
+      style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}
+    >
+      {children}
+      {enabled && typeof document !== "undefined" && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            left: pos?.x ?? 0,
+            top: pos?.y ?? 0,
+            transform: `translate(-50%, -50%) scale(${isHovered ? 1 : 0.4})`,
+            opacity: isHovered ? 1 : 0,
+            width: 72,
+            height: 72,
+            borderRadius: "9999px",
+            background: "hsl(262,60%,72%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+            zIndex: 99999,
+            transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease",
+          }}
+        >
+          <ArrowUpRight size={30} strokeWidth={2.5} color="#fff" />
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 
 /* ─── Shared constants ───────────────────────────────────────────────────── */
 const CARD_W = 368;          // px — card width: h-gap=24px, grid=3×368+2×24=1152=max-w-6xl ✓
 const IMG_H = 200;          // px — image/gradient area height
-const BODY_H = 160;          // px — card body height
-const CARD_H = IMG_H + BODY_H; // 360px total
+const BODY_H = 128;          // px — card body height
+const CARD_H = IMG_H + BODY_H; // 328px total
 const GAP = 24;           // px — grid gap
 
-const COL_OFFSET = (CARD_W + GAP) / 2; // 202 — kept for reference
 const ROW_OFFSET = (CARD_H + GAP) / 2; // 192
 const CARD_STEP = 392;         // px — col step: CARD_W+24=392 → h-gap=24px = v-gap ✓
 
@@ -56,90 +130,95 @@ const RIGHT_COL = 240;
 const CARDS = [
   {
     id: 1,
+    slug: "expense-tracker",
     /* stacked (hero) */  startX: RIGHT_COL - 40, startY: 20, startR: -6, startS: 1.00,
     /* grid: top-left  */ endX: -CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 1,
     animOrder: 1,
     gradient: "hsl(262,70%,58%)",
-    label: "Tracker.io",
+    label: "Web App",
     accent: "#a855f7",
     body: "tracker" as const,
   },
   {
     id: 2,
+    slug: "placeholder-2",
     startX: RIGHT_COL + 30, startY: -10, startR: 4, startS: 1.00,
     /* grid: top-right */ endX: CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 2,
     animOrder: 3,
     gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 2",
+    label: "Landing Page",
     accent: "#38bdf8",
-    body: "placeholder" as const,
+    body: "placeholder2" as const,
   },
   {
     id: 3,
+    slug: "placeholder-3",
     startX: RIGHT_COL - 15, startY: -30, startR: -3, startS: 1.00,
     /* grid: btm-left  */ endX: -CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 3,
     animOrder: 4,
     gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 3",
+    label: "Dashboard",
     accent: "#4ade80",
-    body: "placeholder" as const,
+    body: "placeholder3" as const,
   },
   {
     id: 4,
+    slug: "placeholder-4",
     startX: RIGHT_COL + 10, startY: 10, startR: 2, startS: 1.05,
     /* grid: btm-right */ endX: CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 4,
     animOrder: 6,
     gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 4",
+    label: "Web App",
     accent: "#fb923c",
-    body: "placeholder" as const,
+    body: "placeholder4" as const,
   },
   {
     id: 5,
+    slug: "placeholder-5",
     startX: RIGHT_COL - 25, startY: -45, startR: -1, startS: 0.98,
     /* grid: top-ctr   */ endX: 0, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 5,
     animOrder: 2,
     gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 5",
+    label: "Landing Page",
     accent: "#06b6d4",
-    body: "placeholder" as const,
+    body: "placeholder5" as const,
   },
   {
     id: 6,
+    slug: "placeholder-6",
     startX: RIGHT_COL + 20, startY: 35, startR: 5, startS: 0.96,
     /* grid: btm-ctr   */ endX: 0, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 6,
     animOrder: 5,
     gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 6",
+    label: "Dashboard",
     accent: "#eab308",
-    body: "placeholder" as const,
+    body: "placeholder6" as const,
   },
 ] as const;
 
 /* ─── Card bodies ─────────────────────────────────────────────────────────── */
 function TrackerBody() {
   return (
-    <div style={{ padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", gap: "0.6rem", background: "hsl(var(--background))" }}>
-      <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
-        Tracker.io — Expense Tracker App
-      </h3>
-      <p style={{ fontSize: "0.8rem", color: "hsl(var(--foreground) / 0.58)", lineHeight: 1.6, margin: 0, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-        Aplikasi tracking pengeluaran dan pemasukan harian dengan dashboard realtime, kategorisasi transaksi, serta fitur tambah, edit, dan hapus
-      </p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-        {["React", "Vite", "JavaScript", "CSS3"].map((t) => (
-          <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
-        ))}
+    <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
+          Tracker.io — Expense Tracker App
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+          {["React", "Vite", "JavaScript", "CSS3"].map((t) => (
+            <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
+          ))}
+        </div>
       </div>
       <Link
         href="/projects/expense-tracker"
-        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none", marginTop: "0.15rem" }}
+        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none" }}
       >
         Lihat Detail <ArrowUpRight size={13} />
       </Link>
@@ -147,20 +226,131 @@ function TrackerBody() {
   );
 }
 
-function PlaceholderBody() {
+function PlaceholderBody2() {
   return (
-    <div style={{ padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", gap: "0.6rem", background: "hsl(var(--background))" }} aria-hidden>
-      <div style={{ height: 16, width: "60%", borderRadius: 6, background: "hsl(var(--foreground) / 0.07)" }} />
-      <div style={{ height: 11, width: "100%", borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
-      <div style={{ height: 11, width: "82%", borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
-      <div style={{ display: "flex", gap: "0.4rem" }}>
-        {[56, 40, 64].map((w) => (
-          <div key={w} style={{ height: 18, width: w, borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
-        ))}
+    <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
+          Judul Proyek 2
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+            <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
+          ))}
+        </div>
       </div>
-      <div style={{ height: 14, width: "28%", borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
+      <Link
+        href="/projects/placeholder-2"
+        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none" }}
+      >
+        Lihat Detail <ArrowUpRight size={13} />
+      </Link>
     </div>
   );
+}
+
+function PlaceholderBody3() {
+  return (
+    <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
+          Judul Proyek 3
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+            <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+      <Link
+        href="/projects/placeholder-3"
+        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none" }}
+      >
+        Lihat Detail <ArrowUpRight size={13} />
+      </Link>
+    </div>
+  );
+}
+
+function PlaceholderBody4() {
+  return (
+    <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
+          Judul Proyek 4
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+            <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+      <Link
+        href="/projects/placeholder-4"
+        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none" }}
+      >
+        Lihat Detail <ArrowUpRight size={13} />
+      </Link>
+    </div>
+  );
+}
+
+function PlaceholderBody5() {
+  return (
+    <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
+          Judul Proyek 5
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+            <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+      <Link
+        href="/projects/placeholder-5"
+        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none" }}
+      >
+        Lihat Detail <ArrowUpRight size={13} />
+      </Link>
+    </div>
+  );
+}
+
+function PlaceholderBody6() {
+  return (
+    <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
+          Judul Proyek 6
+        </h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+            <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+      <Link
+        href="/projects/placeholder-6"
+        style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none" }}
+      >
+        Lihat Detail <ArrowUpRight size={13} />
+      </Link>
+    </div>
+  );
+}
+
+function getCardBody(bodyType: string) {
+  switch (bodyType) {
+    case "tracker": return <TrackerBody />;
+    case "placeholder2": return <PlaceholderBody2 />;
+    case "placeholder3": return <PlaceholderBody3 />;
+    case "placeholder4": return <PlaceholderBody4 />;
+    case "placeholder5": return <PlaceholderBody5 />;
+    case "placeholder6": return <PlaceholderBody6 />;
+    default: return null;
+  }
 }
 
 /* ─── AnimatedCard — ONE per card (Rules of Hooks require component level) ─ */
@@ -176,7 +366,11 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
   const rotate = useTransform(progress, [0.25, 0.85], [card.startR, card.endR]);
   const scale = useTransform(progress, [0.25, 0.85], [card.startS, card.endS]);
 
-  // Card body is always visible — no fade-in effect
+  // Only enable cursor effect once cards have fully settled into grid (progress >= 0.85)
+  const [settled, setSettled] = React.useState(false);
+  useMotionValueEvent(progress, "change", (latest) => {
+    setSettled(latest >= 0.85);
+  });
 
   return (
     <motion.div
@@ -191,30 +385,69 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
         border: "none",
         boxShadow: `0 8px 28px rgba(0,0,0,0.26), 0 2px 8px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.07)`,
         zIndex: card.zIndex,
-        pointerEvents: "auto", /* re-enable so card links (e.g. Lihat Detail) remain clickable */
+        pointerEvents: "auto",
         x, y, rotate, scale,
       }}
     >
-      {/* ── Image / gradient area ── */}
-      <div style={{ width: "100%", height: IMG_H, background: card.gradient, position: "relative", flexShrink: 0 }}>
-        {/* Frosted project-name overlay */}
-        <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0,
-          padding: "0.5rem 0.8rem",
-          background: "rgba(0,0,0,0.45)",
-          backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
-          borderTop: `1px solid ${card.accent}20`,
-        }}>
-          <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {card.label}
-          </span>
+      <ProjectCardHoverProvider slug={card.slug} enabled={settled}>
+        {/* ── Image / gradient area ── */}
+        <div style={{ width: "100%", height: IMG_H, background: card.gradient, position: "relative", flexShrink: 0, overflow: "hidden" }}>
+          {/* Frosted project-name overlay */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            padding: "0.5rem 0.8rem",
+            background: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+            borderTop: `1px solid ${card.accent}20`,
+            zIndex: 9,
+          }}>
+            <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {card.label}
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* ── Card body — fades in on landing ── */}
-      <div style={{ height: BODY_H, overflow: "hidden", background: "hsl(var(--background))" }}>
-        {card.body === "tracker" ? <TrackerBody /> : <PlaceholderBody />}
-      </div>
+        {/* ── Card body — fades in on landing ── */}
+        <div style={{ height: BODY_H, overflow: "hidden", background: "hsl(var(--background))" }}>
+          {getCardBody(card.body)}
+        </div>
+      </ProjectCardHoverProvider>
+    </motion.div>
+  );
+}
+
+/** Mobile version of a single project card (needs its own ref for CursorCircle) */
+function MobileProjectCard({ card }: { card: (typeof CARDS)[number] }) {
+  return (
+    <motion.div
+      variants={fadeInUp}
+      style={{
+        borderRadius: "0.875rem",
+        overflow: "hidden",
+        border: "none",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        background: "hsl(var(--background))",
+      }}
+    >
+      <ProjectCardHoverProvider slug={card.slug}>
+        <div style={{ width: "100%", height: 160, background: card.gradient, position: "relative", overflow: "hidden" }}>
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            padding: "0.5rem 0.8rem",
+            background: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(6px)",
+            borderTop: `1px solid ${card.accent}20`,
+            zIndex: 9,
+          }}>
+            <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em" }}>
+              {card.label}
+            </span>
+          </div>
+        </div>
+        <div style={{ height: BODY_H, overflow: "hidden" }}>
+          {getCardBody(card.body)}
+        </div>
+      </ProjectCardHoverProvider>
     </motion.div>
   );
 }
@@ -251,63 +484,28 @@ function MobileHeroProjects() {
           /* Top: navbar height (~60px) + 2.5rem breathing room. Bottom: 2rem before strip */
           padding: "calc(60px + 2.5rem) 1.5rem 2rem",
         }}>
-          {/* Availability badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            style={{ marginBottom: "1.25rem" }}
-          >
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: "0.45rem",
-              padding: "0.35rem 0.85rem", borderRadius: "9999px",
-              border: "1px solid hsla(262,70%,58%,0.4)",
-              background: "hsla(262,70%,58%,0.10)",
-              fontSize: "0.78rem", fontWeight: 500,
-              color: "hsl(262,80%,78%)", letterSpacing: "0.02em",
-            }}>
-              <span style={{ position: "relative", display: "inline-flex" }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80", display: "block" }} />
-                <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#4ade80", animation: "ping 1.4s cubic-bezier(0,0,0.2,1) infinite" }} />
-              </span>
-              Available for freelance &amp; collaboration
-            </span>
-          </motion.div>
-
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontSize: "clamp(1.85rem, 6.5vw, 2.6rem)",
-              fontWeight: 800, lineHeight: 1.2,
+              fontSize: "clamp(2rem, 7vw, 3rem)",
+              fontWeight: 800, lineHeight: 0.95,
               letterSpacing: "-0.02em",
               color: "hsl(var(--foreground))",
-              margin: "0 0 1rem",
+              margin: "0 0 2.5rem",
             }}
           >
-            Web Developer &amp;{" "}
+            Web Developer &amp; <br />
             <span style={{
+              fontSize: "clamp(1.55rem, 5.5vw, 2.2rem)",
+              whiteSpace: "nowrap",
               background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
             }}>
               Database Management
             </span>
           </motion.h1>
-
-          {/* Subtext */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontSize: "clamp(0.9rem, 2.2vw, 1rem)",
-              color: "hsl(var(--foreground) / 0.60)",
-              lineHeight: 1.75,
-              margin: "0 0 1.5rem",
-              maxWidth: "38rem",
-            }}
-          >
-            Berfokus pada pengembangan  website dan basis data untuk membangun solusi digital yang fungsional dan efiesien.
-          </motion.p>
 
           {/* CTA buttons */}
           <motion.div
@@ -390,6 +588,7 @@ function MobileHeroProjects() {
         <style>{`
           @keyframes ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }
           @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+          ${CURSOR_STYLE}
         `}</style>
       </section>
 
@@ -423,36 +622,7 @@ function MobileHeroProjects() {
             }}
           >
             {CARDS.map((card) => (
-              <motion.div
-                key={card.id}
-                variants={fadeInUp}
-                style={{
-                  borderRadius: "0.875rem",
-                  overflow: "hidden",
-                  border: "none",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                  background: "hsl(var(--background))",
-                }}
-              >
-                {/* Gradient image area */}
-                <div style={{ width: "100%", height: 160, background: card.gradient, position: "relative" }}>
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0,
-                    padding: "0.5rem 0.8rem",
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(6px)",
-                    borderTop: `1px solid ${card.accent}20`,
-                  }}>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em" }}>
-                      {card.label}
-                    </span>
-                  </div>
-                </div>
-                {/* Card body */}
-                <div style={{ height: BODY_H, overflow: "hidden" }}>
-                  {card.body === "tracker" ? <TrackerBody /> : <PlaceholderBody />}
-                </div>
-              </motion.div>
+              <MobileProjectCard key={card.id} card={card} />
             ))}
           </motion.div>
         </div>
@@ -631,39 +801,27 @@ function DesktopHeroProjects() {
                 flexDirection: "column",
                 justifyContent: "center",
                 padding: "0",
-                gap: "1.5rem",
+                gap: "2.5rem",
               }}
             >
               {/* Availability badge */}
-              <motion.span
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", padding: "0.35rem 0.85rem", borderRadius: "9999px", border: "1px solid hsla(262,70%,58%,0.4)", background: "hsla(262,70%,58%,0.10)", fontSize: "0.78rem", fontWeight: 500, color: "hsl(262,80%,78%)", letterSpacing: "0.02em", width: "fit-content" }}
-              >
-                <span style={{ position: "relative", display: "inline-flex" }}>
-                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80", display: "block" }} />
-                  <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#4ade80", animation: "ping 1.4s cubic-bezier(0,0,0.2,1) infinite" }} />
-                </span>
-                Available for freelance &amp; collaboration
-              </motion.span>
-
               {/* Headline */}
               <motion.h1
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.02em", color: "hsl(var(--foreground))", margin: 0 }}
+                style={{ fontSize: "clamp(2.2rem, 5vw, 4.2rem)", fontWeight: 800, lineHeight: 0.9, letterSpacing: "-0.02em", color: "hsl(var(--foreground))", margin: 0 }}
               >
-                Web Developer &amp;{" "}
-                <span style={{ background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                Web Developer &amp; <br />
+                <span style={{ 
+                  fontSize: "clamp(1.6rem, 3.8vw, 2.8rem)", 
+                  whiteSpace: "nowrap",
+                  background: "linear-gradient(90deg, hsl(262,70%,58%) 0%, hsl(210,100%,65%) 100%)", 
+                  WebkitBackgroundClip: "text", 
+                  WebkitTextFillColor: "transparent", 
+                  backgroundClip: "text" 
+                }}>
                   Database Management
                 </span>
               </motion.h1>
-
-              {/* Subtext */}
-              <motion.p
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                style={{ fontSize: "clamp(0.9rem,1.5vw,1.05rem)", color: "hsl(var(--foreground) / 0.60)", lineHeight: 1.7, maxWidth: "26rem", margin: 0 }}
-              >
-                Berfokus pada pengembangan  website dan basis data untuk membangun solusi digital yang fungsional dan efiesien.
-              </motion.p>
 
               {/* CTA buttons */}
               <motion.div
@@ -825,6 +983,9 @@ function DesktopHeroProjects() {
         We add exactly this overflow. The visual gap is naturally handled by AboutSection's padding.
       */}
       <div style={{ height: "max(0px, calc(512px - 50vh))" }} />
+
+      {/* Hover overlay styles for project cards */}
+      <style>{CURSOR_STYLE}</style>
 
       {/* AboutSection + ContactSection follow */}
     </>

@@ -25,9 +25,9 @@
   --color-accent-secondary: hsl(var(--accent-secondary));
   --color-neutral-border: hsl(var(--neutral-border));
 
-  /* Typography — maps to font-body, font-heading */
+  /* Typography — semua menggunakan Inter */
   --font-body: var(--font-inter);
-  --font-heading: var(--font-space-grotesk);
+  --font-heading: var(--font-inter);
 
   /* Border radius */
   --radius-DEFAULT: var(--radius);

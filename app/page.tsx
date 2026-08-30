@@ -4,7 +4,6 @@ import { AboutSection } from "@/components/sections/about";
 import { ContactSection } from "@/components/sections/contact";
 
 export const metadata: Metadata = {
-  title: "Home",
   description:
     "Portfolio Dzikra Althaf — Web Developer yang membangun antarmuka web dengan detail, performa tinggi, dan user experience terbaik.",
 };
