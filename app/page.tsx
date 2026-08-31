@@ -8,22 +8,12 @@ export const metadata: Metadata = {
     "Portfolio Dzikra Althaf — Web Developer yang membangun antarmuka web dengan detail, performa tinggi, dan user experience terbaik.",
 };
 
-/**
- * Single-page portfolio layout.
- *
- * Sections: #home → #projects → #about → #contact
- *
- * NOTE: #home and #projects are both inside HeroProjectsSection —
- * a single 300vh scroll container that animates the 4 project cards
- * from a stacked hero layout into a 2×2 projects grid.
- * There is exactly ONE set of 4 cards in the entire page.
- */
+// Single-page portfolio: #home → #projects → #about → #contact
+// Sections home dan projects berada dalam satu komponen HeroProjectsSection
 export default function HomePage() {
   return (
     <>
-      {/* Hero + animated card transition + Projects — all ONE component */}
       <HeroProjectsSection />
-
       <AboutSection />
       <ContactSection />
     </>

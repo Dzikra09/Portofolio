@@ -70,7 +70,6 @@ function TechIcon({ name, label, ext = "svg", invertInDark }: { name: string; la
           loading="lazy"
         />
       </div>
-      {/* Tooltip */}
       <span className="pointer-events-none absolute -bottom-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-foreground/90 px-2 py-1 text-xs font-medium text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         {label}
       </span>
@@ -96,20 +95,13 @@ const highlights = [
   },
 ];
 
-/**
- * About section — bio, tech stack, highlights, social links.
- * id="about" for scroll-spy anchor.
- */
 export function AboutSection() {
   return (
     <section
       id="about"
-      aria-label="About section"
-      className="relative scroll-mt-0 px-6 pt-24 pb-8 sm:scroll-mt-0 sm:pt-32 sm:pb-12"
+      className="relative scroll-mt-12 md:scroll-mt-8 lg:scroll-mt-4 px-6 py-12 md:py-16 lg:py-20"
     >
-
       <div className="mx-auto max-w-6xl">
-        {/* Section header */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -125,8 +117,7 @@ export function AboutSection() {
           </motion.h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-          {/* Left — Bio */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-12 lg:gap-16">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -141,7 +132,6 @@ export function AboutSection() {
               Latar belakang di bidang Sistem Informasi membentuk cara berpikir yang tidak hanya berfokus pada bagaimana sebuah aplikasi dibangun, tetapi juga bagaimana teknologi dapat menjadi solusi bagi kebutuhan pengguna. Melalui proyek akademik, bootcamp, dan pengalaman kolaboratif, setiap proses menjadi kesempatan untuk memahami masalah, merancang solusi, dan mengembangkan aplikasi yang fungsional serta memberikan nilai bagi penggunanya.
             </motion.p>
 
-            {/* Social links */}
             <motion.div variants={fadeInUp} className="flex items-center gap-3">
               {socialLinks.map((link) => {
                 const Icon = iconMap[link.icon as keyof typeof iconMap];
@@ -161,7 +151,6 @@ export function AboutSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right — Tech Stack */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -184,7 +173,6 @@ export function AboutSection() {
           </motion.div>
         </div>
 
-        {/* Highlights */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* ─── Design Token Variables ─── */
 :root {
   --background: 0 0% 100%;
   --foreground: 240 6% 10%;
@@ -16,24 +15,17 @@
   --neutral-border: 240 4% 20%;
 }
 
-/* ─── Tailwind v4 Theme Registration ─── */
 @theme {
-  /* Colors — maps to bg-background, text-foreground, etc. */
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-accent-primary: hsl(var(--accent-primary));
   --color-accent-secondary: hsl(var(--accent-secondary));
   --color-neutral-border: hsl(var(--neutral-border));
-
-  /* Typography — semua menggunakan Inter */
   --font-body: var(--font-inter);
   --font-heading: var(--font-inter);
-
-  /* Border radius */
   --radius-DEFAULT: var(--radius);
 }
 
-/* ─── Base Styles ─── */
 html {
   scroll-behavior: smooth;
 }
@@ -46,7 +38,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Smooth color transitions on theme switch */
+/* Memberikan efek transisi halus pada pergantian warna tema */
 *,
 *::before,
 *::after {
@@ -55,14 +47,14 @@ body {
   transition-duration: 150ms;
 }
 
-/* Prevent transition on page load — only on user toggle */
+/* Menonaktifkan efek transisi saat pertama kali halaman dimuat */
 html.no-transition *,
 html.no-transition *::before,
 html.no-transition *::after {
   transition: none !important;
 }
 
-/* Invert colors in dark mode for specific images */
+/* Membalikkan warna pada elemen dengan spesifikasi khusus dalam mode gelap */
 .dark .invert-in-dark {
   filter: invert(1);
 }

@@ -8,7 +8,6 @@ import { Footer } from "@/components/layout/footer";
 import { siteConfig } from "@/config/site";
 import { Onboarding } from "@/components/layout/onboarding";
 
-/* ─── Google Fonts (self-hosted via next/font) ─── */
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -16,7 +15,6 @@ const inter = Inter({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-/* ─── Site Metadata ─── */
 export const metadata: Metadata = {
   title: {
     default: siteConfig.title,
@@ -39,7 +37,6 @@ export const metadata: Metadata = {
   },
 };
 
-/* ─── Root Layout ─── */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -48,15 +45,15 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      suppressHydrationWarning // Required by next-themes to prevent hydration mismatch
+      suppressHydrationWarning // diperlukan next-themes untuk menghindari hydration mismatch
       className={inter.variable}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
-        {/* Intro overlay — fixed z-[9999], shown once per session */}
+        {/* Intro overlay — tampil sekali per sesi, z-index di atas semua elemen */}
         <Onboarding />
         <ThemeProvider>
           <SmoothScroll>
-            {/* Skip to content for accessibility */}
+            {/* Skip link untuk aksesibilitas keyboard */}
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-accent-secondary focus:px-4 focus:py-2 focus:text-white focus:outline-none"

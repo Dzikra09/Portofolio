@@ -7,14 +7,8 @@ import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types";
 import { cn } from "@/lib/utils";
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   ProjectCard
-   Real project data — shows gradient OR image cover, full card body.
-   ─────────────────────────────────────────────────────────────────────────── */
-
 interface ProjectCardProps {
   project: Project;
-  /** Index used for stagger delay when inside a stagger container */
   index?: number;
 }
 
@@ -35,16 +29,13 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
       whileHover="hover"
       className="group relative flex w-full flex-col overflow-hidden rounded-2xl border border-neutral-border bg-background transition-shadow duration-300 hover:shadow-xl hover:shadow-accent-primary/10"
     >
-      {/* ── Cover area ── */}
       <div className="relative h-48 w-full overflow-hidden sm:h-52">
         {project.gradient ? (
-          /* Gradient placeholder — visually identical to Hero stacked cards */
           <div
             style={{ height: "100%", background: project.gradient }}
             aria-hidden
           />
         ) : (
-          /* Fallback: real cover image */
           <motion.div
             variants={{ hover: { scale: 1.05 } }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -60,7 +51,6 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
           </motion.div>
         )}
 
-        {/* Hover gradient overlay */}
         <motion.div
           variants={{ hover: { opacity: 1 } }}
           initial={{ opacity: 0 }}
@@ -68,7 +58,6 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
           className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"
         />
 
-        {/* Frosted project-name overlay — bottom of cover (replaces category badge) */}
         <div
           style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
@@ -91,7 +80,6 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
           </span>
         </div>
 
-        {/* Hover action buttons (top-right) */}
         <motion.div
           variants={{ hover: { opacity: 1, y: 0 } }}
           initial={{ opacity: 0, y: -8 }}
@@ -125,19 +113,15 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         </motion.div>
       </div>
 
-      {/* ── Card Body — full project details ── */}
       <div className="flex flex-1 flex-col gap-3 p-5">
-        {/* Title */}
         <h3 className="font-heading text-base font-bold leading-snug text-foreground transition-colors group-hover:text-accent-secondary sm:text-lg">
           {project.title}
         </h3>
 
-        {/* Description */}
         <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-foreground/60">
           {project.description}
         </p>
 
-        {/* Tech Stack tags */}
         <div className="flex flex-wrap gap-1.5 pt-1">
           {project.techStack.map((tech) => (
             <span
@@ -149,7 +133,6 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
           ))}
         </div>
 
-        {/* Footer link */}
         <Link
           href={`/projects/${project.slug}`}
           className={cn(
@@ -168,7 +151,6 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
         </Link>
       </div>
 
-      {/* Animated border highlight on hover */}
       <motion.div
         variants={{ hover: { opacity: 1 } }}
         initial={{ opacity: 0 }}
@@ -178,4 +160,3 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
     </motion.article>
   );
 }
-
