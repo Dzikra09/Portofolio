@@ -8,26 +8,20 @@ const iconMap = {
   instagram: Instagram,
 } as const;
 
-/**
- * Simple footer with copyright and social links.
- * Server Component — no interactivity needed.
- */
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="border-t border-neutral-border bg-background">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-        {/* Copyright */}
         <p className="text-sm text-foreground/50">
           &copy; {currentYear}{" "}
           <span className="font-medium text-foreground/70">
             {siteConfig.name}
           </span>
-          . All rights reserved.
+          . Hak Cipta Dilindungi.
         </p>
 
-        {/* Social links */}
         <ul className="flex items-center gap-3" role="list">
           {socialLinks.map((link) => {
             const Icon = iconMap[link.icon as keyof typeof iconMap];

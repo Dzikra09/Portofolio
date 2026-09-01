@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
@@ -8,24 +8,17 @@ import { Footer } from "@/components/layout/footer";
 import { siteConfig } from "@/config/site";
 import { Onboarding } from "@/components/layout/onboarding";
 
-/* ─── Google Fonts (self-hosted via next/font) ─── */
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
-/* ─── Site Metadata ─── */
 export const metadata: Metadata = {
   title: {
     default: siteConfig.title,
-    template: `%s — ${siteConfig.name}`,
+    template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
@@ -44,7 +37,6 @@ export const metadata: Metadata = {
   },
 };
 
-/* ─── Root Layout ─── */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -53,15 +45,15 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      suppressHydrationWarning // Required by next-themes to prevent hydration mismatch
-      className={`${inter.variable} ${spaceGrotesk.variable}`}
+      suppressHydrationWarning // diperlukan next-themes untuk menghindari hydration mismatch
+      className={inter.variable}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
-        {/* Intro overlay — fixed z-[9999], shown once per session */}
+        {/* Intro overlay — tampil sekali per sesi, z-index di atas semua elemen */}
         <Onboarding />
         <ThemeProvider>
           <SmoothScroll>
-            {/* Skip to content for accessibility */}
+            {/* Skip link untuk aksesibilitas keyboard */}
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-accent-secondary focus:px-4 focus:py-2 focus:text-white focus:outline-none"
