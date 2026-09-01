@@ -35,8 +35,12 @@ import {
   type MotionValue,
 } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
+import { projects } from "@/data/projects";
+
+const trackerProject = projects.find((p) => p.slug === "expense-tracker");
 
 /* ─── Shared constants ───────────────────────────────────────────────────── */
 const CARD_W = 368;          // px — card width: h-gap=24px, grid=3×368+2×24=1152=max-w-6xl ✓
@@ -60,10 +64,7 @@ const CARDS = [
     /* grid: top-left  */ endX: -CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 1,
     animOrder: 1,
-    gradient: "hsl(262,70%,58%)",
-    label: "Tracker.io",
-    accent: "#a855f7",
-    body: "tracker" as const,
+    project: projects[0],
   },
   {
     id: 2,
@@ -71,10 +72,7 @@ const CARDS = [
     /* grid: top-right */ endX: CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 2,
     animOrder: 3,
-    gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 2",
-    accent: "#38bdf8",
-    body: "placeholder" as const,
+    project: projects[1],
   },
   {
     id: 3,
@@ -82,10 +80,7 @@ const CARDS = [
     /* grid: btm-left  */ endX: -CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 3,
     animOrder: 4,
-    gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 3",
-    accent: "#4ade80",
-    body: "placeholder" as const,
+    project: projects[2],
   },
   {
     id: 4,
@@ -93,10 +88,7 @@ const CARDS = [
     /* grid: btm-right */ endX: CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 4,
     animOrder: 6,
-    gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 4",
-    accent: "#fb923c",
-    body: "placeholder" as const,
+    project: projects[3],
   },
   {
     id: 5,
@@ -104,10 +96,7 @@ const CARDS = [
     /* grid: top-ctr   */ endX: 0, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 5,
     animOrder: 2,
-    gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 5",
-    accent: "#06b6d4",
-    body: "placeholder" as const,
+    project: projects[4],
   },
   {
     id: 6,
@@ -115,50 +104,32 @@ const CARDS = [
     /* grid: btm-ctr   */ endX: 0, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 6,
     animOrder: 5,
-    gradient: "hsl(262,70%,58%)",
-    label: "Project Placeholder 6",
-    accent: "#eab308",
-    body: "placeholder" as const,
+    project: projects[5],
   },
 ] as const;
 
 /* ─── Card bodies ─────────────────────────────────────────────────────────── */
-function TrackerBody() {
+function ProjectBody({ project }: { project?: (typeof projects)[0] }) {
+  if (!project) return null;
   return (
     <div style={{ padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", gap: "0.6rem", background: "hsl(var(--background))" }}>
-      <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
-        Tracker.io — Expense Tracker App
+      <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        {project.title}
       </h3>
       <p style={{ fontSize: "0.8rem", color: "hsl(var(--foreground) / 0.58)", lineHeight: 1.6, margin: 0, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-        Aplikasi tracking pengeluaran dan pemasukan harian dengan dashboard realtime, kategorisasi transaksi, serta fitur tambah, edit, dan hapus
+        {project.description}
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-        {["React", "Vite", "JavaScript", "CSS3"].map((t) => (
+        {project.techStack?.slice(0, 4).map((t) => (
           <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
         ))}
       </div>
       <Link
-        href="/projects/expense-tracker"
+        href={`/projects/${project.slug}`}
         style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.45)", textDecoration: "none", marginTop: "0.15rem" }}
       >
         Lihat Detail <ArrowUpRight size={13} />
       </Link>
-    </div>
-  );
-}
-
-function PlaceholderBody() {
-  return (
-    <div style={{ padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", gap: "0.6rem", background: "hsl(var(--background))" }} aria-hidden>
-      <div style={{ height: 16, width: "60%", borderRadius: 6, background: "hsl(var(--foreground) / 0.07)" }} />
-      <div style={{ height: 11, width: "100%", borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
-      <div style={{ height: 11, width: "82%", borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
-      <div style={{ display: "flex", gap: "0.4rem" }}>
-        {[56, 40, 64].map((w) => (
-          <div key={w} style={{ height: 18, width: w, borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
-        ))}
-      </div>
-      <div style={{ height: 14, width: "28%", borderRadius: 6, background: "hsl(var(--foreground) / 0.05)" }} />
     </div>
   );
 }
@@ -196,24 +167,33 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
       }}
     >
       {/* ── Image / gradient area ── */}
-      <div style={{ width: "100%", height: IMG_H, background: card.gradient, position: "relative", flexShrink: 0 }}>
+      <div style={{ width: "100%", height: IMG_H, background: card.project?.gradient || "hsl(262,70%,58%)", position: "relative", flexShrink: 0 }}>
+        {card.project?.coverImage && (
+          <Image
+            src={card.project.coverImage}
+            alt={card.project?.title || "Project"}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        )}
         {/* Frosted project-name overlay */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
           padding: "0.5rem 0.8rem",
           background: "rgba(0,0,0,0.45)",
           backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
-          borderTop: `1px solid ${card.accent}20`,
+          borderTop: `1px solid ${card.project?.accent || "#a855f7"}20`,
         }}>
           <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {card.label}
+            {card.project?.title || "Project"}
           </span>
         </div>
       </div>
 
       {/* ── Card body — fades in on landing ── */}
       <div style={{ height: BODY_H, overflow: "hidden", background: "hsl(var(--background))" }}>
-        {card.body === "tracker" ? <TrackerBody /> : <PlaceholderBody />}
+        <ProjectBody project={card.project} />
       </div>
     </motion.div>
   );
@@ -435,22 +415,31 @@ function MobileHeroProjects() {
                 }}
               >
                 {/* Gradient image area */}
-                <div style={{ width: "100%", height: 160, background: card.gradient, position: "relative" }}>
+                <div style={{ width: "100%", height: 160, background: card.project?.gradient || "hsl(262,70%,58%)", position: "relative" }}>
+                  {card.project?.coverImage && (
+                    <Image
+                      src={card.project.coverImage}
+                      alt={card.project?.title || "Project"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 100vw"
+                    />
+                  )}
                   <div style={{
                     position: "absolute", bottom: 0, left: 0, right: 0,
                     padding: "0.5rem 0.8rem",
                     background: "rgba(0,0,0,0.45)",
                     backdropFilter: "blur(6px)",
-                    borderTop: `1px solid ${card.accent}20`,
+                    borderTop: `1px solid ${card.project?.accent || "#a855f7"}20`,
                   }}>
                     <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "0.02em" }}>
-                      {card.label}
+                      {card.project?.title || "Project"}
                     </span>
                   </div>
                 </div>
                 {/* Card body */}
                 <div style={{ height: BODY_H, overflow: "hidden" }}>
-                  {card.body === "tracker" ? <TrackerBody /> : <PlaceholderBody />}
+                  <ProjectBody project={card.project} />
                 </div>
               </motion.div>
             ))}
