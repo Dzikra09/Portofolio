@@ -53,9 +53,8 @@ function TechIcon({ name, label, ext = "svg", invertInDark }: { name: string; la
         <img
           src={`/icons/${name}.${ext}`}
           alt={label}
-          className={`h-full w-full object-contain drop-shadow-sm rounded-lg sm:rounded-xl ${
-            invertInDark ? "invert-in-dark" : ""
-          }`}
+          className={`h-full w-full object-contain drop-shadow-sm rounded-lg sm:rounded-xl ${invertInDark ? "invert-in-dark" : ""
+            }`}
           loading="lazy"
         />
       </div>
@@ -139,15 +138,15 @@ export function AboutSection() {
             viewport={viewportOnce}
             className="relative mt-12 flex h-full items-center justify-center md:mt-0 md:justify-end"
           >
-            <motion.div 
+            <motion.div
               variants={fadeInUp}
               className="relative h-full min-h-[320px] w-full max-w-[360px]"
             >
-              {/* Offset outline placeholder style */}
-              <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[2rem] border-2 border-[#f4e4d4] dark:border-orange-900/30 sm:translate-x-4 sm:translate-y-4" />
-              
-              {/* Image Container */}
-              <div className="absolute inset-0 overflow-hidden rounded-[2rem] bg-[#f8f1e7] dark:bg-neutral-900">
+              {/* Offset border — anchored to bottom-right, never overlaps image */}
+              <div className="absolute bottom-0 left-3 right-0 top-3 rounded-[2rem] border-2 border-[#e8d5c0] dark:border-[#c4a882]/40 sm:left-4 sm:top-4" />
+
+              {/* Image Container — anchored to top-left, stays clear of border */}
+              <div className="absolute bottom-3 left-0 right-3 top-0 overflow-hidden rounded-[2rem] bg-[#f8f1e7] dark:bg-neutral-900 sm:bottom-4 sm:right-4">
                 <img
                   src="/IconDzikraPorto.webp"
                   alt="Dzikra Alfiyah Althaf"

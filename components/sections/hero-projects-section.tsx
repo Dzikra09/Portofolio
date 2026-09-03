@@ -161,7 +161,7 @@ const CARDS = [
     zIndex: 5,
     animOrder: 2,
     gradient: "hsl(262,70%,58%)",
-    label: "Landing Page",
+    label: "Web App",
     accent: "#06b6d4",
     body: "placeholder5" as const,
   },
