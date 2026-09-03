@@ -185,7 +185,7 @@ function TrackerBody() {
     <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
-          Tracker.io ΓÇö Expense Tracker App
+          Tracker.io
         </h3>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
           {["React", "Vite", "JavaScript", "CSS3"].map((t) => (
@@ -280,7 +280,7 @@ function PlaceholderBody5() {
           My Personal Notes
         </h3>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+          {["React", "Next.js", "Tailwind CSS"].map((t) => (
             <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
           ))}
         </div>
