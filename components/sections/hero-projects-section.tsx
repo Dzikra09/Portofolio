@@ -91,16 +91,16 @@ function ProjectCardHoverProvider({
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 
 // Variabel konfigurasi ukuran dan posisi untuk animasi grid kartu proyek
-const CARD_W = 368;          // px ΓÇö card width: h-gap=24px, grid=3├ù368+2├ù24=1152=max-w-6xl Γ£ô
-const IMG_H = 200;          // px ΓÇö image/gradient area height
-const BODY_H = 128;          // px ΓÇö card body height
+const CARD_W = 368;          // px — card width: h-gap=24px, grid=3×368+2×24=1152=max-w-6xl ✓
+const IMG_H = 200;          // px — image/gradient area height
+const BODY_H = 128;          // px — card body height
 const CARD_H = IMG_H + BODY_H; // 328px total
-const GAP = 24;           // px ΓÇö grid gap
+const GAP = 24;           // px — grid gap
 
 const ROW_OFFSET = (CARD_H + GAP) / 2; // 192
-const CARD_STEP = 392;         // px ΓÇö col step: CARD_W+24=392 ΓåÆ h-gap=24px = v-gap Γ£ô
+const CARD_STEP = 392;         // px — col step: CARD_W+24=392 → h-gap=24px = v-gap ✓
 
-// Right-column centre offset from viewport centre (Γëê1280px desktop)
+// Right-column centre offset from viewport centre (≈1280px desktop)
 const RIGHT_COL = 240;
 
 // Data konfigurasi setiap kartu proyek termasuk posisi awal dan akhir animasi
@@ -367,7 +367,7 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
       }}
     >
       <ProjectCardHoverProvider slug={card.slug} enabled={settled}>
-        {/* ΓöÇΓöÇ Image / gradient area ΓöÇΓöÇ */}
+        {/* ── Image / gradient area ── */}
         <div style={{ width: "100%", height: IMG_H, background: card.gradient, position: "relative", flexShrink: 0, overflow: "hidden" }}>
           {/* Frosted project-name overlay */}
           <div style={{
@@ -384,7 +384,7 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
           </div>
         </div>
 
-        {/* ΓöÇΓöÇ Card body ΓÇö fades in on landing ΓöÇΓöÇ */}
+        {/* ── Card body — fades in on landing ── */}
         <div style={{ height: BODY_H, overflow: "hidden", background: "hsl(var(--background))" }}>
           {getCardBody(card.body)}
         </div>
@@ -437,7 +437,7 @@ function MobileHeroProjects() {
 
   return (
     <>
-      {/* ΓöÇΓöÇ Hero section ΓöÇΓöÇ */}
+      {/* ── Hero section ── */}
       <section
         id="home"
         aria-label="Hero section"
@@ -462,7 +462,7 @@ function MobileHeroProjects() {
         }}>
 
 
-          {/* ΓöÇΓöÇ Headline ΓöÇΓöÇ */}
+          {/* ── Headline ── */}
           <motion.h1
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -483,7 +483,7 @@ function MobileHeroProjects() {
             </span>
           </motion.h1>
 
-          {/* ΓöÇΓöÇ Short Description ΓöÇΓöÇ */}
+          {/* ── Short Description ── */}
           <motion.p
             initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
@@ -499,7 +499,7 @@ function MobileHeroProjects() {
 
 
 
-          {/* ΓöÇΓöÇ CTA buttons ΓöÇΓöÇ */}
+          {/* ── CTA buttons ── */}
           <motion.div
             initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.44, ease: [0.16, 1, 0.3, 1] }}
@@ -532,7 +532,7 @@ function MobileHeroProjects() {
           </motion.div>
         </div>
 
-        {/* ΓöÇΓöÇ Bottom marquee strip (no duplicate badge) ΓöÇΓöÇ */}
+        {/* ── Bottom marquee strip (no duplicate badge) ── */}
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
@@ -547,11 +547,11 @@ function MobileHeroProjects() {
             {Array.from({ length: 4 }).map((_, gi) => (
               <span key={gi} style={{ display: "inline-flex", alignItems: "center", gap: "1.5rem", paddingRight: "1.5rem", fontSize: "0.72rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.35)", letterSpacing: "0.07em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                 <span>Web Development</span>
-                <span style={{ opacity: 0.4, fontSize: "0.45rem" }}>ΓùÅ</span>
+                <span style={{ opacity: 0.4, fontSize: "0.45rem" }}>•</span>
                 <span>Back-end Development</span>
-                <span style={{ opacity: 0.4, fontSize: "0.45rem" }}>ΓùÅ</span>
+                <span style={{ opacity: 0.4, fontSize: "0.45rem" }}>•</span>
                 <span>UX Research</span>
-                <span style={{ opacity: 0.4, fontSize: "0.45rem" }}>ΓùÅ</span>
+                <span style={{ opacity: 0.4, fontSize: "0.45rem" }}>•</span>
               </span>
             ))}
           </div>
@@ -564,7 +564,7 @@ function MobileHeroProjects() {
         `}</style>
       </section>
 
-      {/* ΓöÇΓöÇ Projects section ΓöÇΓöÇ */}
+      {/* ── Projects section ── */}
       <section
         id="projects"
         aria-label="Projects section"
@@ -591,7 +591,7 @@ function MobileHeroProjects() {
             viewport={viewportOnce}
             style={{
               display: "grid",
-              /* 1 col on xs, 2 cols when ΓëÑ 440px */
+              /* 1 col on xs, 2 cols when ≥ 440px */
               gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))",
               gap: "0.875rem",
             }}
@@ -606,7 +606,7 @@ function MobileHeroProjects() {
   );
 }
 
-// Layout statis tanpa animasi scroll untuk layar tablet (768px ΓÇô 1023px)
+// Layout statis tanpa animasi scroll untuk layar tablet (768px – 1023px)
 function TabletHeroProjects() {
   const scrollTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -614,7 +614,7 @@ function TabletHeroProjects() {
 
   return (
     <>
-      {/* ΓöÇΓöÇ Hero section ΓöÇΓöÇ */}
+      {/* ── Hero section ── */}
       <section
         id="home"
         aria-label="Hero section"
@@ -643,7 +643,7 @@ function TabletHeroProjects() {
         }}>
 
 
-          {/* ΓöÇΓöÇ Headline ΓÇö larger clamp for tablet ΓöÇΓöÇ */}
+          {/* ── Headline — larger clamp for tablet ── */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
@@ -664,7 +664,7 @@ function TabletHeroProjects() {
             </span>
           </motion.h1>
 
-          {/* ΓöÇΓöÇ Short Description ΓöÇΓöÇ */}
+          {/* ── Short Description ── */}
           <motion.p
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -680,7 +680,7 @@ function TabletHeroProjects() {
 
 
 
-          {/* ΓöÇΓöÇ CTA buttons ΓöÇΓöÇ */}
+          {/* ── CTA buttons ── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
@@ -713,7 +713,7 @@ function TabletHeroProjects() {
           </motion.div>
         </div>
 
-        {/* ΓöÇΓöÇ Bottom strip: marquee only ΓöÇΓöÇ */}
+        {/* ── Bottom strip: marquee only ── */}
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.55 }}
@@ -729,11 +729,11 @@ function TabletHeroProjects() {
             {Array.from({ length: 4 }).map((_, gi) => (
               <span key={gi} style={{ display: "inline-flex", alignItems: "center", gap: "2rem", paddingRight: "2rem", fontSize: "0.8rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.35)", letterSpacing: "0.07em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                 <span>Web Development</span>
-                <span style={{ opacity: 0.4, fontSize: "0.5rem" }}>ΓùÅ</span>
+                <span style={{ opacity: 0.4, fontSize: "0.5rem" }}>•</span>
                 <span>Back-end Development</span>
-                <span style={{ opacity: 0.4, fontSize: "0.5rem" }}>ΓùÅ</span>
+                <span style={{ opacity: 0.4, fontSize: "0.5rem" }}>•</span>
                 <span>UX Research</span>
-                <span style={{ opacity: 0.4, fontSize: "0.5rem" }}>ΓùÅ</span>
+                <span style={{ opacity: 0.4, fontSize: "0.5rem" }}>•</span>
               </span>
             ))}
           </div>
@@ -746,7 +746,7 @@ function TabletHeroProjects() {
         `}</style>
       </section>
 
-      {/* ΓöÇΓöÇ Projects section (3-col grid on tablet) ΓöÇΓöÇ */}
+      {/* ── Projects section (3-col grid on tablet) ── */}
       <section
         id="projects"
         aria-label="Projects section"
@@ -772,7 +772,7 @@ function TabletHeroProjects() {
             viewport={viewportOnce}
             style={{
               display: "grid",
-              /* 2 cols at 768px, 3 cols when ΓëÑ 900px */
+              /* 2 cols at 768px, 3 cols when ≥ 900px */
               gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
               gap: "1.1rem",
             }}
@@ -833,7 +833,7 @@ export function HeroProjectsSection() {
   return <MobileHeroProjects />;
 }
 
-// Layout untuk layar desktop (ΓëÑ 1024px) yang dilengkapi dengan animasi scroll penuh
+// Layout untuk layar desktop (≥ 1024px) yang dilengkapi dengan animasi scroll penuh
 function DesktopHeroProjects() {
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -856,7 +856,7 @@ function DesktopHeroProjects() {
     return () => clearTimeout(timer);
   }, []);
 
-  // ΓöÇΓöÇ Natural Scrolling Simulation ΓöÇΓöÇ
+  // ── Natural Scrolling Simulation ──
   // Instead of fading out, we move the elements vertically at the same speed as the user's scroll.
   // As the user scrolls 100vh (progress 0 -> 1), the elements move -100vh.
   const scrollYOffset = useTransform(scrollYProgress, [0, 1], ["0vh", "-100vh"]);
@@ -869,9 +869,9 @@ function DesktopHeroProjects() {
    * IntersectionObserver doesn't require zIndex changes to detect the sentinel.
    */
 
-  // ΓöÇΓöÇ Show heading with fadeInUp effect once cards are fully settled ΓöÇΓöÇ
+  // ── Show heading with fadeInUp effect once cards are fully settled ──
   // Starts at progress 0.82 (cards finish at 0.85), fully visible at 0.95
-  // Mimics About section's fadeInUp: opacity 0ΓåÆ1 + translateY 20pxΓåÆ0
+  // Mimics About section's fadeInUp: opacity 0→1 + translateY 20px→0
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (!headingRef.current) return;
     const t = latest < 0.82 ? 0 : latest > 0.95 ? 1 : (latest - 0.82) / 0.13;
@@ -946,7 +946,7 @@ function DesktopHeroProjects() {
                   </span>
                 </motion.h1>
 
-                {/* ΓöÇΓöÇ Short Description ΓöÇΓöÇ */}
+                {/* ── Short Description ── */}
                 <motion.p
                   initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -1007,11 +1007,11 @@ function DesktopHeroProjects() {
                   {Array.from({ length: 4 }).map((_, gi) => (
                     <span key={gi} style={{ display: "inline-flex", alignItems: "center", gap: "2rem", paddingRight: "2rem", fontSize: "0.81rem", fontWeight: 500, color: "hsl(var(--foreground) / 0.38)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                       <span>Web Development</span>
-                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>ΓùÅ</span>
+                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>•</span>
                       <span>Back-end Development</span>
-                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>ΓùÅ</span>
+                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>•</span>
                       <span>UX Research</span>
-                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>ΓùÅ</span>
+                      <span style={{ opacity: 0.35, fontSize: "0.52rem" }}>•</span>
                     </span>
                   ))}
                 </div>
@@ -1024,7 +1024,7 @@ function DesktopHeroProjects() {
               ref={headingRef}
               style={{
                 position: "absolute",
-                /* ΓöÇΓöÇ Adjust this value to move the heading vertically ΓöÇΓöÇ */
+                /* ── Adjust this value to move the heading vertically ── */
                 top: "96px",
                 left: 0, /* Aligned to wrapper's px-6 edge */
                 visibility: "hidden", /* shown imperatively via headingRef */

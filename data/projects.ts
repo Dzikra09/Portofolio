@@ -1,9 +1,9 @@
 ﻿import type { Project } from "@/types";
 
 /**
- * Dummy project data ΓÇö replace with real projects over time.
+ * Dummy project data — replace with real projects over time.
  * Categories: "Web App" | "Landing Page" | "Dashboard"
- * featured: true ΓåÆ shown in Home Projects Preview (max 3)
+ * featured: true → shown in Home Projects Preview (max 3)
  */
 export const projects: Project[] = [
   {

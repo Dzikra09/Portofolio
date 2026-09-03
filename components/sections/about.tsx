@@ -43,18 +43,7 @@ const techStack: TechGroup[] = [
       { name: "firebase", label: "Firebase", ext: "png" },
     ],
   },
-  {
-    category: "Tools",
-    items: [
-      { name: "vscode", label: "VS Code" },
-      { name: "antigravity", label: "Antigravity", ext: "png" },
-      { name: "claude", label: "Claude", ext: "png" },
-      { name: "gemini", label: "Gemini" },
-      { name: "chatgpt", label: "ChatGPT", invertInDark: true },
-      { name: "git", label: "Git" },
-      { name: "figma", label: "Figma" },
-    ],
-  },
+
 ];
 
 function TechIcon({ name, label, ext = "svg", invertInDark }: { name: string; label: string; ext?: string; invertInDark?: boolean }) {
@@ -102,29 +91,21 @@ export function AboutSection() {
       className="relative scroll-mt-12 md:scroll-mt-8 lg:scroll-mt-4 px-6 py-12 md:py-16 lg:py-20"
     >
       <div className="mx-auto max-w-6xl">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          className="mb-3"
-        >
-          <motion.h2
-            variants={fadeInUp}
-            className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
-          >
-            About
-          </motion.h2>
-        </motion.div>
-
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-12 lg:gap-16">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={viewportOnce}
-            className="flex h-full flex-col justify-between gap-6"
+            className="flex h-full flex-col gap-6 lg:gap-8 lg:pr-8"
           >
+            <motion.h2
+              variants={fadeInUp}
+              className="font-heading text-3xl font-bold text-foreground sm:text-4xl"
+            >
+              Hi, I'm Dzikra!
+            </motion.h2>
+
             <motion.p
               variants={fadeInUp}
               className="text-base leading-relaxed text-foreground/70"
@@ -156,22 +137,64 @@ export function AboutSection() {
             initial="hidden"
             whileInView="visible"
             viewport={viewportOnce}
-            className="flex h-full flex-col justify-between gap-6"
+            className="relative mt-12 flex h-full items-center justify-center md:mt-0 md:justify-end"
           >
-            {techStack.map((group) => (
-              <motion.div key={group.category} variants={fadeInUp}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-foreground/40">
-                  {group.category}
-                </p>
-                <div className="flex flex-wrap gap-4 sm:gap-5">
-                  {group.items.map((tech) => (
-                    <TechIcon key={tech.name} name={tech.name} label={tech.label} ext={tech.ext} invertInDark={tech.invertInDark} />
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+            <motion.div 
+              variants={fadeInUp}
+              className="relative h-full min-h-[320px] w-full max-w-[360px]"
+            >
+              {/* Offset outline placeholder style */}
+              <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[2rem] border-2 border-[#f4e4d4] dark:border-orange-900/30 sm:translate-x-4 sm:translate-y-4" />
+              
+              {/* Image Container */}
+              <div className="absolute inset-0 overflow-hidden rounded-[2rem] bg-[#f8f1e7] dark:bg-neutral-900">
+                <img
+                  src="/IconDzikraPorto.webp"
+                  alt="Dzikra Alfiyah Althaf"
+                  className="h-full w-full object-cover object-[center_15%] scale-[1.15] transition-transform duration-500 hover:scale-[1.2]"
+                />
+              </div>
+
+              {/* Floating Badge */}
+              <div className="absolute -left-4 top-8 z-10 flex flex-col rounded-2xl border border-neutral-border bg-background/95 px-5 py-3 shadow-xl backdrop-blur-sm sm:-left-8">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/50">
+                  Based in
+                </span>
+                <span className="text-sm font-bold text-foreground">
+                  Jakarta, Indonesia
+                </span>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="mt-12 md:mt-16"
+        >
+          <motion.div variants={fadeInUp}>
+            <h3 className="mb-6 font-heading text-2xl font-bold text-foreground">
+              My Stack
+            </h3>
+            <div className="flex flex-col gap-6 md:flex-row md:gap-8 lg:gap-10">
+              {techStack.map((group) => (
+                <div key={group.category}>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-foreground/40">
+                    {group.category}
+                  </p>
+                  <div className="flex flex-wrap gap-3 sm:gap-4">
+                    {group.items.map((tech) => (
+                      <TechIcon key={tech.name} name={tech.name} label={tech.label} ext={tech.ext} invertInDark={tech.invertInDark} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
 
         <motion.div
           variants={staggerContainer}
