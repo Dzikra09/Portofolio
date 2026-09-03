@@ -59,7 +59,7 @@ export const projects: Project[] = [
   },
   {
     slug: "placeholder-4",
-    title: "Judul Proyek 4",
+    title: "4",
     category: "Web App",
     description: "Deskripsi singkat untuk proyek placeholder 4.",
     coverImage: "/covers/cover-webapp.svg",
