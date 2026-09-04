@@ -34,14 +34,25 @@ function ProjectCardHoverProvider({
 }) {
   const [pos, setPos] = React.useState<{ x: number; y: number } | null>(null);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [isTouch, setIsTouch] = React.useState(false);
   const router = useRouter();
 
-  const handleMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!enabled) return;
-    setPos({ x: e.clientX, y: e.clientY });
-  }, [enabled]);
+  React.useEffect(() => {
+    // Deteksi jika perangkat adalah perangkat layar sentuh (mobile/tablet)
+    const mediaQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
+    setIsTouch(mediaQuery.matches);
 
-  const handleEnter = React.useCallback(() => { if (enabled) setIsHovered(true); }, [enabled]);
+    const handler = (e: MediaQueryListEvent) => setIsTouch(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  const handleMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!enabled || isTouch) return;
+    setPos({ x: e.clientX, y: e.clientY });
+  }, [enabled, isTouch]);
+
+  const handleEnter = React.useCallback(() => { if (enabled && !isTouch) setIsHovered(true); }, [enabled, isTouch]);
   const handleLeave = React.useCallback(() => setIsHovered(false), []);
   const handleClick = React.useCallback(() => {
     if (enabled) router.push(`/projects/${slug}`);
@@ -55,15 +66,15 @@ function ProjectCardHoverProvider({
 
   return (
     <div
-      className={enabled ? "proj-card-area" : undefined}
+      className={enabled && !isTouch ? "proj-card-area" : undefined}
       onMouseMove={handleMove}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
       onClick={handleClick}
-      style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}
+      style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", cursor: isTouch ? "pointer" : undefined }}
     >
       {children}
-      {enabled && typeof document !== "undefined" && pos !== null && createPortal(
+      {enabled && !isTouch && typeof document !== "undefined" && pos !== null && createPortal(
         <div
           style={{
             position: "fixed",
@@ -115,9 +126,9 @@ const CARDS = [
   {
     id: 1,
     slug: "expense-tracker",
-    /* stacked (hero) */  startX: RIGHT_COL - 40, startY: 20, startR: -6, startS: 1.00,
+    /* stacked: top-most */ startX: RIGHT_COL, startY: 0, startR: -2, startS: 1.05,
     /* grid: top-left  */ endX: -CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
-    zIndex: 1,
+    zIndex: 6,
     animOrder: 1,
     gradient: "hsl(262,70%,58%)",
     label: "Web App",
@@ -128,10 +139,10 @@ const CARDS = [
   {
     id: 2,
     slug: "placeholder-2",
-    startX: RIGHT_COL + 30, startY: -10, startR: 4, startS: 1.00,
-    /* grid: top-right */ endX: CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
-    zIndex: 2,
-    animOrder: 3,
+    /* stacked: 2nd */ startX: RIGHT_COL + 20, startY: 20, startR: 4, startS: 1.02,
+    /* grid: top-ctr   */ endX: 0, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 5,
+    animOrder: 2,
     gradient: "hsl(262,70%,58%)",
     label: "Landing Page",
     accent: "#38bdf8",
@@ -141,10 +152,10 @@ const CARDS = [
   {
     id: 3,
     slug: "placeholder-3",
-    startX: RIGHT_COL - 15, startY: -30, startR: -3, startS: 1.00,
-    /* grid: btm-left  */ endX: -CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
-    zIndex: 3,
-    animOrder: 4,
+    /* stacked: 3rd */ startX: RIGHT_COL - 25, startY: -15, startR: -4, startS: 1.00,
+    /* grid: top-right */ endX: CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 4,
+    animOrder: 3,
     gradient: "hsl(262,70%,58%)",
     label: "Dashboard",
     accent: "#4ade80",
@@ -154,10 +165,10 @@ const CARDS = [
   {
     id: 4,
     slug: "placeholder-4",
-    startX: RIGHT_COL + 10, startY: 10, startR: 2, startS: 1.05,
-    /* grid: btm-right */ endX: CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
-    zIndex: 4,
-    animOrder: 6,
+    /* stacked: 4th */ startX: RIGHT_COL + 15, startY: -30, startR: 2, startS: 0.98,
+    /* grid: btm-left  */ endX: -CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 3,
+    animOrder: 4,
     gradient: "hsl(262,70%,58%)",
     label: "Web App",
     accent: "#fb923c",
@@ -167,10 +178,10 @@ const CARDS = [
   {
     id: 5,
     slug: "placeholder-5",
-    startX: RIGHT_COL - 25, startY: -45, startR: -1, startS: 0.98,
-    /* grid: top-ctr   */ endX: 0, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
-    zIndex: 5,
-    animOrder: 2,
+    /* stacked: 5th */ startX: RIGHT_COL - 30, startY: 25, startR: -6, startS: 0.96,
+    /* grid: btm-ctr   */ endX: 0, endY: ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 2,
+    animOrder: 5,
     gradient: "hsl(262,70%,58%)",
     label: "Web App",
     accent: "#06b6d4",
@@ -180,10 +191,10 @@ const CARDS = [
   {
     id: 6,
     slug: "placeholder-6",
-    startX: RIGHT_COL + 20, startY: 35, startR: 5, startS: 0.96,
-    /* grid: btm-ctr   */ endX: 0, endY: ROW_OFFSET, endR: 0, endS: 1.00,
-    zIndex: 6,
-    animOrder: 5,
+    /* stacked: 6th */ startX: RIGHT_COL + 35, startY: -5, startR: 5, startS: 0.94,
+    /* grid: btm-right */ endX: CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
+    zIndex: 1,
+    animOrder: 6,
     gradient: "hsl(262,70%,58%)",
     label: "Dashboard",
     accent: "#eab308",
@@ -221,10 +232,10 @@ function PlaceholderBody2() {
     <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
-          Judul Proyek 2
+          My Personal Notes
         </h3>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
+          {["React", "Next.js", "Tailwind CSS"].map((t) => (
             <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
           ))}
         </div>
@@ -290,10 +301,10 @@ function PlaceholderBody5() {
     <div style={{ height: "100%", padding: "1rem 1.1rem 1.1rem", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "hsl(var(--background))" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1.3, margin: 0 }}>
-          My Personal Notes
+          Judul Proyek 5
         </h3>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-          {["React", "Next.js", "Tailwind CSS"].map((t) => (
+          {["Tech 1", "Tech 2", "Tech 3"].map((t) => (
             <span key={t} style={{ padding: "0.1rem 0.5rem", borderRadius: 6, background: "hsl(var(--foreground) / 0.06)", fontSize: "0.72rem", color: "hsl(var(--foreground) / 0.48)" }}>{t}</span>
           ))}
         </div>

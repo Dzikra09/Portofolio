@@ -150,7 +150,7 @@ export function AboutSection() {
                 <img
                   src="/IconDzikraPorto.webp"
                   alt="Dzikra Alfiyah Althaf"
-                  className="h-full w-full object-cover object-[center_15%] scale-[1.15] transition-transform duration-500 hover:scale-[1.2]"
+                  className="h-full w-full object-cover object-[center_30%] scale-[1.10] transition-transform duration-500 hover:scale-[1.15]"
                 />
               </div>
 
@@ -172,7 +172,7 @@ export function AboutSection() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-12 md:mt-16"
+          className="mt-20 md:mt-16"
         >
           <motion.div variants={fadeInUp}>
             <h3 className="mb-6 font-heading text-2xl font-bold text-foreground">
