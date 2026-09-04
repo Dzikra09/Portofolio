@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 // Komponen utama yang menggabungkan bagian Hero, animasi transisi kartu, dan daftar proyek ke dalam satu kesatuan layout responsif.
 
@@ -11,9 +11,11 @@ import {
   useMotionValueEvent,
   type MotionValue,
 } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
+import { projects } from "@/data/projects";
 
 // Menambahkan gaya CSS untuk kursor melayang khusus pada elemen proyek
 const CURSOR_STYLE = `
@@ -103,6 +105,11 @@ const CARD_STEP = 392;         // px — col step: CARD_W+24=392 → h-gap=24px 
 // Right-column centre offset from viewport centre (≈1280px desktop)
 const RIGHT_COL = 240;
 
+// Helper: ambil coverImage dari projects data berdasarkan slug
+function getCoverImage(slug: string): string {
+  return projects.find((p) => p.slug === slug)?.coverImage ?? "";
+}
+
 // Data konfigurasi setiap kartu proyek termasuk posisi awal dan akhir animasi
 const CARDS = [
   {
@@ -116,6 +123,7 @@ const CARDS = [
     label: "Web App",
     accent: "#a855f7",
     body: "tracker" as const,
+    coverImage: getCoverImage("expense-tracker"),
   },
   {
     id: 2,
@@ -128,6 +136,7 @@ const CARDS = [
     label: "Landing Page",
     accent: "#38bdf8",
     body: "placeholder2" as const,
+    coverImage: getCoverImage("placeholder-2"),
   },
   {
     id: 3,
@@ -140,6 +149,7 @@ const CARDS = [
     label: "Dashboard",
     accent: "#4ade80",
     body: "placeholder3" as const,
+    coverImage: getCoverImage("placeholder-3"),
   },
   {
     id: 4,
@@ -152,6 +162,7 @@ const CARDS = [
     label: "Web App",
     accent: "#fb923c",
     body: "placeholder4" as const,
+    coverImage: getCoverImage("placeholder-4"),
   },
   {
     id: 5,
@@ -164,6 +175,7 @@ const CARDS = [
     label: "Web App",
     accent: "#06b6d4",
     body: "placeholder5" as const,
+    coverImage: getCoverImage("placeholder-5"),
   },
   {
     id: 6,
@@ -176,8 +188,9 @@ const CARDS = [
     label: "Dashboard",
     accent: "#eab308",
     body: "placeholder6" as const,
+    coverImage: getCoverImage("placeholder-6"),
   },
-] as const;
+];
 
 // Komponen antarmuka untuk isi detail dari masing-masing kartu proyek
 function TrackerBody() {
@@ -369,6 +382,17 @@ function AnimatedCard({ card, progress }: AnimatedCardProps) {
       <ProjectCardHoverProvider slug={card.slug} enabled={settled}>
         {/* ── Image / gradient area ── */}
         <div style={{ width: "100%", height: IMG_H, background: card.gradient, position: "relative", flexShrink: 0, overflow: "hidden" }}>
+          {/* Cover image — shown when coverImage is set */}
+          {card.coverImage && (
+            <Image
+              src={card.coverImage}
+              alt={card.label}
+              fill
+              sizes={`${CARD_W}px`}
+              style={{ objectFit: "cover", objectPosition: "top" }}
+              priority
+            />
+          )}
           {/* Frosted project-name overlay */}
           <div style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
@@ -408,6 +432,16 @@ function MobileProjectCard({ card, imgHeight = 160 }: { card: (typeof CARDS)[num
     >
       <ProjectCardHoverProvider slug={card.slug}>
         <div style={{ width: "100%", height: imgHeight, background: card.gradient, position: "relative", overflow: "hidden" }}>
+          {/* Cover image — shown when coverImage is set */}
+          {card.coverImage && (
+            <Image
+              src={card.coverImage}
+              alt={card.label}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectFit: "cover", objectPosition: "top" }}
+            />
+          )}
           <div style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
             padding: "0.5rem 0.8rem",

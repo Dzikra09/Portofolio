@@ -12,7 +12,7 @@ export const projects: Project[] = [
     category: "Web App",
     description:
       "Aplikasi tracking pengeluaran dan pemasukan harian dengan dashboard realtime, kategorisasi transaksi, serta fitur tambah, edit, dan hapus",
-    coverImage: "/covers/cover-webapp.svg",
+    coverImage: "/mockup/mockuptracker1.webp",
     gradient: "linear-gradient(135deg, #1a0533 0%, #3b1278 100%)",
     accent: "#a855f7",
     techStack: ["React", "Vite", "JavaScript", "CSS3"],
@@ -76,7 +76,7 @@ export const projects: Project[] = [
     title: "My Personal Notes",
     category: "Web App",
     description: "My Personal Notes merupakan website pencatatan pribadi berbasis React + Vite yang dikembangkan sebagai bagian dari project Coding Camp Dicoding × DBS Foundation 2.0. Aplikasi memungkinkan pengguna membuat, mencari, dan mengorganisasi catatan berdasarkan waktu. Dalam pengembangannya, saya berfokus pada peningkatan UI/UX melalui tampilan card-based, visual yang konsisten, serta responsive layout agar aplikasi lebih terstruktur dan nyaman digunakan.",
-    coverImage: "/covers/cover-webapp.svg",
+    coverImage: "/mockup/mockupnotes.webp",
     gradient: "linear-gradient(135deg, #1a0533 0%, #3b1278 100%)",
     accent: "#06b6d4",
     techStack: ["React", "Next.js", "Tailwind CSS"],
