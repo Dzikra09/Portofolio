@@ -477,6 +477,7 @@ function MobileHeroProjects() {
         aria-label="Hero section"
         style={{ background: "hsl(var(--background))", position: "relative", overflow: "hidden" }}
       >
+        <motion.div variants={staggerContainer} initial="hidden" animate="visible">
         {/* Subtle radial glow in the background */}
         <div
           aria-hidden
@@ -498,8 +499,7 @@ function MobileHeroProjects() {
 
           {/* ── Headline ── */}
           <motion.h1
-            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            variants={fadeInUp}
             style={{
               fontSize: "clamp(1.9rem, 8vw, 2.8rem)",
               fontWeight: 800, lineHeight: 1.0,
@@ -519,8 +519,7 @@ function MobileHeroProjects() {
 
           {/* ── Short Description ── */}
           <motion.p
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            variants={fadeInUp}
             style={{
               fontSize: "0.95rem", lineHeight: 1.65,
               color: "hsl(var(--foreground) / 0.75)",
@@ -535,8 +534,7 @@ function MobileHeroProjects() {
 
           {/* ── CTA buttons ── */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.44, ease: [0.16, 1, 0.3, 1] }}
+            variants={fadeInUp}
             style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}
           >
             <button
@@ -568,8 +566,7 @@ function MobileHeroProjects() {
 
         {/* ── Bottom marquee strip (no duplicate badge) ── */}
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          variants={fadeInUp}
           style={{
             borderTop: "1px solid hsl(var(--neutral-border) / 0.5)",
             padding: "0.6rem 0",
@@ -589,6 +586,7 @@ function MobileHeroProjects() {
               </span>
             ))}
           </div>
+        </motion.div>
         </motion.div>
 
         <style>{`
@@ -658,6 +656,7 @@ function TabletHeroProjects() {
           overflow: "hidden",
         }}
       >
+        <motion.div variants={staggerContainer} initial="hidden" animate="visible">
         {/* Subtle background glow */}
         <div
           aria-hidden
@@ -679,8 +678,7 @@ function TabletHeroProjects() {
 
           {/* ── Headline — larger clamp for tablet ── */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            variants={fadeInUp}
             style={{
               fontSize: "clamp(2.6rem, 6vw, 4rem)",
               fontWeight: 800, lineHeight: 0.95,
@@ -700,8 +698,7 @@ function TabletHeroProjects() {
 
           {/* ── Short Description ── */}
           <motion.p
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            variants={fadeInUp}
             style={{
               fontSize: "1.1rem", lineHeight: 1.65,
               color: "hsl(var(--foreground) / 0.75)",
@@ -716,8 +713,7 @@ function TabletHeroProjects() {
 
           {/* ── CTA buttons ── */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            variants={fadeInUp}
             style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}
           >
             <button
@@ -749,8 +745,7 @@ function TabletHeroProjects() {
 
         {/* ── Bottom strip: marquee only ── */}
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
+          variants={fadeInUp}
           style={{
             borderTop: "1px solid hsl(var(--neutral-border) / 0.5)",
             padding: "1rem 0",
@@ -771,6 +766,7 @@ function TabletHeroProjects() {
               </span>
             ))}
           </div>
+        </motion.div>
         </motion.div>
 
         <style>{`
