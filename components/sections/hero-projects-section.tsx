@@ -114,7 +114,7 @@ const ROW_OFFSET = (CARD_H + GAP) / 2; // 192
 const CARD_STEP = 392;         // px — col step: CARD_W+24=392 → h-gap=24px = v-gap ✓
 
 // Right-column centre offset from viewport centre (≈1280px desktop)
-const RIGHT_COL = 240;
+const RIGHT_COL = 320;
 
 // Helper: ambil coverImage dari projects data berdasarkan slug
 function getCoverImage(slug: string): string {
@@ -139,7 +139,7 @@ const CARDS = [
   {
     id: 2,
     slug: "placeholder-2",
-    /* stacked: 2nd */ startX: RIGHT_COL + 20, startY: 20, startR: 4, startS: 1.02,
+    /* stacked: 2nd */ startX: RIGHT_COL + 15, startY: 10, startR: 3, startS: 1.02,
     /* grid: top-ctr   */ endX: 0, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 5,
     animOrder: 2,
@@ -152,7 +152,7 @@ const CARDS = [
   {
     id: 3,
     slug: "placeholder-3",
-    /* stacked: 3rd */ startX: RIGHT_COL - 25, startY: -15, startR: -4, startS: 1.00,
+    /* stacked: 3rd */ startX: RIGHT_COL - 15, startY: -10, startR: -3, startS: 1.00,
     /* grid: top-right */ endX: CARD_STEP, endY: -ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 4,
     animOrder: 3,
@@ -165,7 +165,7 @@ const CARDS = [
   {
     id: 4,
     slug: "placeholder-4",
-    /* stacked: 4th */ startX: RIGHT_COL + 15, startY: -30, startR: 2, startS: 0.98,
+    /* stacked: 4th */ startX: RIGHT_COL + 10, startY: -15, startR: 4, startS: 0.98,
     /* grid: btm-left  */ endX: -CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 3,
     animOrder: 4,
@@ -178,7 +178,7 @@ const CARDS = [
   {
     id: 5,
     slug: "placeholder-5",
-    /* stacked: 5th */ startX: RIGHT_COL - 30, startY: 25, startR: -6, startS: 0.96,
+    /* stacked: 5th */ startX: RIGHT_COL - 10, startY: 15, startR: -4, startS: 0.96,
     /* grid: btm-ctr   */ endX: 0, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 2,
     animOrder: 5,
@@ -191,7 +191,7 @@ const CARDS = [
   {
     id: 6,
     slug: "placeholder-6",
-    /* stacked: 6th */ startX: RIGHT_COL + 35, startY: -5, startR: 5, startS: 0.94,
+    /* stacked: 6th */ startX: RIGHT_COL + 20, startY: 5, startR: 5, startS: 0.94,
     /* grid: btm-right */ endX: CARD_STEP, endY: ROW_OFFSET, endR: 0, endS: 1.00,
     zIndex: 1,
     animOrder: 6,
