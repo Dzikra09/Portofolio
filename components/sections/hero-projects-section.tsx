@@ -622,7 +622,7 @@ function MobileHeroProjects() {
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={viewportOnce}
+            viewport={{ once: true, amount: 0.01 }}
             style={{
               display: "grid",
               /* 1 col on xs, 2 cols when ≥ 440px */
@@ -803,7 +803,7 @@ function TabletHeroProjects() {
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={viewportOnce}
+            viewport={{ once: true, amount: 0.01 }}
             style={{
               display: "grid",
               /* 2 cols at 768px, 3 cols when ≥ 900px */
