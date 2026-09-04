@@ -44,7 +44,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   }
 
   return (
-    <div className="relative min-h-screen px-6 py-12 sm:py-20">
+    <div className="relative min-h-screen px-6 pt-20 pb-12 sm:pt-20 sm:pb-20">
       {/* Subtle background glow */}
       <div
         aria-hidden
